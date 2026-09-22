@@ -1,0 +1,12 @@
+{
+  "TYPES": {
+    "Actor": {
+      "ranger": "Ranger (hero)",
+      "companion": "Companion (follower)",
+      "creature": "Creature"
+    },
+    "Item": {
+      "objet": "Item"
+    }
+  }
+}

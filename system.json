@@ -1,0 +1,50 @@
+{
+  "id": "rosd",
+  "title": "Rangers of Shadow Deep",
+  "description": "Système non officiel pour Rangers of Shadow Deep (Deluxe Edition) de Joseph A. McCullough : fiches de ranger, de compagnon et de créature, jets de dés automatisés (compétences, combat, tir, sorts, survie). Nécessite le livre de règles.",
+  "version": "1.5.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14"
+  },
+  "authors": [
+    {
+      "name": "Paul"
+    }
+  ],
+  "esmodules": [
+    "rosd.mjs"
+  ],
+  "styles": [
+    "styles/rosd.css"
+  ],
+  "languages": [
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "ranger": {},
+      "companion": {},
+      "creature": {}
+    },
+    "Item": {
+      "objet": {}
+    }
+  },
+  "socket": true,
+  "grid": {
+    "distance": 1,
+    "units": "\""
+  },
+  "primaryTokenAttribute": "health",
+  "initiative": "@init"
+}
