@@ -1,0 +1,53 @@
+<div class="rosd-sheet">
+  <header class="rosd-header">
+    <img class="rosd-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="portrait" data-tooltip="Changer le portrait">
+    <div class="rosd-ident">
+      <input class="rosd-name" type="text" name="name" value="{{actor.name}}" placeholder="Nom de la créature">
+      <div class="rosd-ident-row">
+        <label>Bestiaire
+          <select data-profile>{{selectOptions profileChoices selected=system.profile blank="— Choisir —"}}</select></label>
+        <button type="button" data-action="applyProfile"><i class="fa-solid fa-file-import"></i> Appliquer</button>
+        <label class="short">PX<input type="number" name="system.xp" value="{{system.xp}}"></label>
+      </div>
+      <div class="rosd-quick">
+        <button type="button" data-action="melee"><i class="fa-solid fa-khanda"></i> Mêlée {{fightLabel}}</button>
+        <button type="button" data-action="shoot"><i class="fa-solid fa-bullseye"></i> Tir {{shootLabel}}</button>
+        <button type="button" data-action="rollStat" data-key="will"><i class="fa-solid fa-brain"></i> Volonté</button>
+      </div>
+    </div>
+    {{> "systems/rosd/templates/parts/emblem.hbs"}}
+  </header>
+
+  <div class="rosd-body">
+    {{> "systems/rosd/templates/parts/stats.hbs"}}
+    <div class="rosd-columns">
+      <section class="rosd-block">
+        <h2>Traits</h2>
+        <div class="rosd-flags">
+          <label class="rosd-check"><input type="checkbox" name="system.flags.undead" {{checked system.flags.undead}}> Mort-vivant</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.animal" {{checked system.flags.animal}}> Animal</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.large" {{checked system.flags.large}}> Grand</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.flying" {{checked system.flags.flying}}> Volant</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.poison" {{checked system.flags.poison}}> Poison</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.partialImmunity" {{checked system.flags.partialImmunity}}> Immunité partielle</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.immuneCrit" {{checked system.flags.immuneCrit}}> Immunisé aux critiques</label>
+          <label class="rosd-check"><input type="checkbox" name="system.flags.spellcaster" {{checked system.flags.spellcaster}}> Lanceur de sorts</label>
+          <label class="rosd-inline">Maladie (ND)<input type="number" min="0" name="system.flags.disease" value="{{system.flags.disease}}"></label>
+          <label class="rosd-inline">Horrifique (ND)<input type="number" min="0" name="system.flags.horrific" value="{{system.flags.horrific}}"></label>
+        </div>
+        <label class="rosd-wide">Notes du profil<textarea name="system.traits" rows="3">{{system.traits}}</textarea></label>
+      </section>
+      <section class="rosd-block">
+        <h2>Règles spéciales</h2>
+        <textarea name="system.special" rows="5" placeholder="Actions particulières, sorts, comportement du scénario…">{{system.special}}</textarea>
+        <details class="rosd-ai"><summary>Comportement des créatures</summary>{{{aiText}}}</details>
+      </section>
+    </div>
+    {{> "systems/rosd/templates/parts/weapons.hbs"}}
+    {{> "systems/rosd/templates/parts/items.hbs"}}
+    <section class="rosd-block">
+      <h2>Notes</h2>
+      <textarea name="system.notes" rows="4">{{system.notes}}</textarea>
+    </section>
+  </div>
+</div>

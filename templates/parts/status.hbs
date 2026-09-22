@@ -1,0 +1,6 @@
+<section class="rosd-block rosd-status">
+  <h2>États</h2>
+  <label class="rosd-check"><input type="checkbox" name="system.status.poisoned" {{checked system.status.poisoned}}> Empoisonné <small>(1 action par activation)</small></label>
+  <label class="rosd-check"><input type="checkbox" name="system.status.diseased" {{checked system.status.diseased}}> Malade <small>(-1 à tous les jets)</small></label>
+  <label class="rosd-inline">Faim et soif <input type="number" min="0" name="system.status.hunger" value="{{system.status.hunger}}"> <small>niveau(x), -2 Santé chacun</small></label>
+</section>

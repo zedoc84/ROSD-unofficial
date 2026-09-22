@@ -1,0 +1,75 @@
+<div class="rosd-sheet">
+  <header class="rosd-header">
+    <img class="rosd-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="portrait" data-tooltip="Changer le portrait">
+    <div class="rosd-ident">
+      <input class="rosd-name" type="text" name="name" value="{{actor.name}}" placeholder="Nom du compagnon">
+      <div class="rosd-ident-row">
+        <label>Profil
+          <select data-profile>{{selectOptions profileChoices selected=system.profile blank="— Choisir —"}}</select></label>
+        <button type="button" data-action="applyProfile" data-tooltip="Remplit caractéristiques, équipement et compétences"><i class="fa-solid fa-file-import"></i> Appliquer</button>
+        <label class="short">Coût PR<input type="number" name="system.rp" value="{{system.rp}}"></label>
+        <label>Ranger<input type="text" name="system.owner" value="{{system.owner}}"></label>
+      </div>
+      <div class="rosd-quick">
+        <button type="button" data-action="melee"><i class="fa-solid fa-khanda"></i> Mêlée {{fightLabel}}</button>
+        <button type="button" data-action="shoot"><i class="fa-solid fa-bullseye"></i> Tir {{shootLabel}}</button>
+        <button type="button" data-action="newScenario"><i class="fa-solid fa-rotate"></i> Nouveau scénario</button>
+        <button type="button" data-action="survival"><i class="fa-solid fa-skull-crossbones"></i> Survie</button>
+        <label class="rosd-check"><input type="checkbox" name="system.animal" {{checked system.animal}}> Animal</label>
+      </div>
+    </div>
+    {{> "systems/rosd/templates/parts/emblem.hbs"}}
+  </header>
+
+  <nav class="rosd-tabs">
+    <a data-action="rosdTab" data-tab-link="main">Fiche</a>
+    <a data-action="rosdTab" data-tab-link="powers">Capacités &amp; sorts</a>
+    <a data-action="rosdTab" data-tab-link="campaign">Progression &amp; notes</a>
+  </nav>
+
+  <div class="rosd-body">
+    <section class="rosd-panel" data-tab-panel="main">
+      {{> "systems/rosd/templates/parts/stats.hbs"}}
+      <div class="rosd-columns">
+        <div>
+          <section class="rosd-block">
+            <h2>Équipement</h2>
+            <label class="rosd-wide">Équipement de base
+              <textarea name="system.baseGear" rows="3">{{system.baseGear}}</textarea></label>
+            <datalist id="rosd-equip-{{actor.id}}">{{#each equipmentList}}<option value="{{this}}"></option>{{/each}}</datalist>
+            <div class="rosd-form-grid">
+              <label>Objet 1<input type="text" list="rosd-equip-{{actor.id}}" name="system.gear.item1" value="{{system.gear.item1}}"></label>
+              <label>Objet 2<input type="text" list="rosd-equip-{{actor.id}}" name="system.gear.item2" value="{{system.gear.item2}}"></label>
+            </div>
+          </section>
+          {{> "systems/rosd/templates/parts/status.hbs"}}
+        </div>
+        {{> "systems/rosd/templates/parts/skills.hbs"}}
+      </div>
+      {{> "systems/rosd/templates/parts/items.hbs"}}
+      {{> "systems/rosd/templates/parts/weapons.hbs"}}
+    </section>
+
+    <section class="rosd-panel" data-tab-panel="powers">
+      {{> "systems/rosd/templates/parts/abilities.hbs"}}
+      {{> "systems/rosd/templates/parts/spells.hbs"}}
+    </section>
+
+    <section class="rosd-panel" data-tab-panel="campaign">
+      <section class="rosd-block">
+        <h2>Progression</h2>
+        <div class="rosd-form-grid">
+          <label>Points de progression<input type="number" min="0" max="100" name="system.progression" value="{{system.progression}}"></label>
+          <div class="rosd-readout">Prochaine récompense : <span>{{system.nextReward}}</span></div>
+        </div>
+        <p class="rosd-hint">+2 PP s'il finit le scénario debout, +1 s'il a été mis hors de combat et a survécu.</p>
+        {{#if system.earnedRewards.length}}<ul class="rosd-rewards">{{#each system.earnedRewards}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+      </section>
+      <section class="rosd-block">
+        <h2>Blessures et notes</h2>
+        <label class="rosd-wide">Blessures permanentes<textarea name="system.injuries" rows="3">{{system.injuries}}</textarea></label>
+        <label class="rosd-wide">Notes<textarea name="system.notes" rows="6">{{system.notes}}</textarea></label>
+      </section>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<section class="rosd-block rosd-list">
+  <h2>Sorts <small>(1 action, 1 sort par activation, hors combat)</small></h2>
+  <ol>
+    {{#each spells}}
+    <li class="{{#if used}}used{{/if}}">
+      <div class="rosd-list-row">
+        <input type="checkbox" data-action="toggleUsed" data-list="spells" data-index="{{i}}" {{checked used}} data-tooltip="Lancé pendant ce scénario">
+        <a class="rosd-icon" data-action="editIcon" data-list="spells" data-index="{{i}}" data-tooltip="Clic : changer l'icône (PNG/JPEG) · Clic droit : icône par défaut">{{#if img}}<img src="{{img}}" alt="">{{else}}<i class="fa-solid fa-wand-sparkles"></i>{{/if}}</a>
+        <a class="rosd-list-name" data-action="describe" data-list="spells" data-index="{{i}}" data-tooltip="Afficher dans le chat">{{label}}</a>
+        {{#if tag}}<span class="rosd-tag">{{tag}}</span>{{/if}}
+        <span class="rosd-en">{{en}}</span>
+        {{#if ../editable}}
+        <button type="button" data-action="cast" data-index="{{i}}"><i class="fa-solid fa-wand-sparkles"></i> Lancer</button>
+        <a class="rosd-remove" data-action="remove" data-list="spells" data-index="{{i}}" data-tooltip="Retirer"><i class="fa-solid fa-xmark"></i></a>
+        {{/if}}
+      </div>
+      <p class="rosd-desc">{{desc}}</p>
+    </li>
+    {{else}}
+    <li class="rosd-empty">Aucun sort connu.</li>
+    {{/each}}
+  </ol>
+  {{#if editable}}
+  <select data-add="spells"><option value="">+ Ajouter un sort…</option>{{selectOptions spellChoices}}</select>
+  {{/if}}
+  {{#if (eq actor.type "ranger")}}
+  <label class="rosd-inline rosd-caster">Objet de lanceur de sorts
+    <select name="system.casterItem">{{selectOptions casterChoices selected=system.casterItem}}</select></label>
+  {{/if}}
+  <p class="rosd-hint">Ciblez les figurines visées avant de lancer : les boutons de résistance, de soins et les attaques magiques les reprennent.</p>
+</section>

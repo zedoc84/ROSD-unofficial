@@ -1,0 +1,23 @@
+<section class="rosd-block rosd-weapons">
+  <h2>Armes et combat</h2>
+  <div class="rosd-attack-buttons">
+    <button type="button" data-action="melee"><i class="fa-solid fa-khanda"></i> Corps à corps <b>{{fightLabel}}</b></button>
+    <button type="button" data-action="shoot"><i class="fa-solid fa-bullseye"></i> Tir <b>{{shootLabel}}</b></button>
+  </div>
+  <p class="rosd-hint">Ciblez l'adversaire (touche T sur son jeton) avant de cliquer : ses caractéristiques seront reprises automatiquement.</p>
+  <div class="rosd-form-grid">
+    <label>Arme de mêlée
+      <select name="system.weapons.melee">{{selectOptions meleeChoices selected=system.weapons.melee}}</select></label>
+    <label>Arme de tir
+      <select name="system.weapons.ranged">{{selectOptions rangedChoices selected=system.weapons.ranged}}</select></label>
+    {{#if (eq system.weapons.ranged "other")}}
+    <label>Dégâts (tir « Autre »)<input type="number" name="system.weapons.rangedDmg" value="{{system.weapons.rangedDmg}}"></label>
+    <label>Portée (")<input type="number" name="system.weapons.rangedRange" value="{{system.weapons.rangedRange}}"></label>
+    {{/if}}
+    <label>Bonus de Combat (arme magique…)<input type="number" name="system.weapons.fightBonus" value="{{system.weapons.fightBonus}}"></label>
+    <label>Bonus de Tir<input type="number" name="system.weapons.shootBonus" value="{{system.weapons.shootBonus}}"></label>
+    <label>Bonus de dégâts en mêlée<input type="number" name="system.weapons.dmgBonus" value="{{system.weapons.dmgBonus}}"></label>
+    <label>Multiplicateur de dégâts<input type="number" min="1" name="system.weapons.mult" value="{{system.weapons.mult}}"></label>
+    <label class="rosd-check"><input type="checkbox" name="system.weapons.magic" {{checked system.weapons.magic}}> Arme magique</label>
+  </div>
+</section>

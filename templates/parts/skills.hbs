@@ -1,0 +1,11 @@
+<section class="rosd-block rosd-skills">
+  <h2>Compétences</h2>
+  <div class="rosd-skill-grid">
+    {{#each skills}}
+    <div class="rosd-skill{{#if value}} trained{{/if}}">
+      <a data-action="rollSkill" data-key="{{key}}" data-tooltip="Jet de {{label}}"><i class="fa-solid fa-dice-d20"></i> {{label}}</a>
+      <input type="number" name="system.skills.{{key}}" value="{{value}}">
+    </div>
+    {{/each}}
+  </div>
+</section>

@@ -1,0 +1,321 @@
+/* ==========================================================
+   Rangers of Shadow Deep — pierre, cendre et étoile d'argent
+   ========================================================== */
+:root {
+  --rosd-stone: #e3e4df;
+  --rosd-stone-2: #d4d6d0;
+  --rosd-slate: #2c3237;
+  --rosd-iron: #5b646b;
+  --rosd-silver: #c3cad0;
+  --rosd-green: #3e5a45;
+  --rosd-green-2: #2f4636;
+  --rosd-blood: #8a2c2c;
+  --rosd-ink: #1f2427;
+  --rosd-head: "Modesto Condensed", "Palatino Linotype", serif;
+  --rosd-body: "Signika", "Segoe UI", sans-serif;
+}
+
+/* ---------- Fenêtre ---------- */
+.rosd.sheet .window-content {
+  padding: 0;
+  background: var(--rosd-stone);
+  color: var(--rosd-ink);
+  font-family: var(--rosd-body);
+}
+.rosd-sheet { display: flex; flex-direction: column; height: 100%; }
+.rosd-body { flex: 1; overflow-y: auto; padding: 10px 14px 16px; }
+
+.rosd.sheet input, .rosd.sheet select, .rosd.sheet textarea,
+.rosd-dialog input, .rosd-dialog select {
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--rosd-ink);
+  border: 1px solid #a9aea8;
+  border-radius: 2px;
+  font-family: var(--rosd-body);
+}
+.rosd.sheet input:focus, .rosd.sheet select:focus, .rosd.sheet textarea:focus {
+  outline: 2px solid var(--rosd-green);
+  outline-offset: 0;
+  box-shadow: none;
+}
+.rosd.sheet textarea { width: 100%; resize: vertical; min-height: 3em; padding: 4px 6px; }
+.rosd.sheet .window-content button {
+  background: var(--rosd-green);
+  color: #f2f3ef;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--rosd-body);
+  font-size: 12px;
+  line-height: 24px;
+  padding: 0 8px;
+  width: auto;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.rosd.sheet .window-content button:hover { background: var(--rosd-green-2); }
+.rosd.sheet .window-content button:focus-visible { outline: 2px solid var(--rosd-silver); }
+.rosd.sheet .window-content a[data-action] { cursor: pointer; }
+
+/* ---------- En-tête ---------- */
+.rosd-header {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  padding: 12px 14px;
+  background: var(--rosd-slate);
+  color: var(--rosd-silver);
+  position: relative;
+}
+.rosd-portrait {
+  width: 96px; height: 96px;
+  object-fit: cover;
+  border: 2px solid var(--rosd-silver);
+  cursor: pointer;
+  flex: 0 0 96px;
+}
+.rosd-ident { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rosd.sheet .rosd-name {
+  font-family: var(--rosd-head);
+  font-size: 34px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--rosd-iron);
+  color: #f2f3ef;
+  padding: 0;
+}
+.rosd-ident-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; font-size: 12px; }
+.rosd-ident-row label { display: flex; flex-direction: column; gap: 1px; color: var(--rosd-silver); }
+.rosd-ident-row label.short input { width: 52px; }
+.rosd-ident-row input, .rosd-ident-row select {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #f2f3ef !important;
+  border-color: var(--rosd-iron) !important;
+  height: 24px;
+}
+.rosd-ident-row select option { color: var(--rosd-ink); }
+.rosd-next { align-self: center; display: flex; gap: 6px; align-items: center; }
+.rosd-quick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.rosd-quick .rosd-check { color: var(--rosd-silver); font-size: 12px; }
+.rosd-star {
+  width: 64px; height: 64px;
+  color: var(--rosd-silver);
+  opacity: 0.85;
+  flex: 0 0 64px;
+  align-self: center;
+}
+
+/* Emblème modifiable */
+.rosd-emblem { flex: 0 0 64px; align-self: center; display: block; cursor: pointer; }
+.rosd-emblem img { width: 64px; height: 64px; object-fit: contain; border: none; display: block; }
+.rosd-emblem .rosd-star { display: block; }
+.rosd-emblem:hover { filter: brightness(1.25); }
+
+/* ---------- Onglets ---------- */
+.rosd-tabs {
+  display: flex;
+  background: var(--rosd-stone-2);
+  border-bottom: 1px solid #aeb2ab;
+  padding: 0 10px;
+}
+.rosd-tabs a {
+  padding: 6px 12px 5px;
+  font-family: var(--rosd-head);
+  font-size: 19px;
+  color: var(--rosd-iron);
+  border-bottom: 3px solid transparent;
+}
+.rosd-tabs a.active { color: var(--rosd-ink); border-bottom-color: var(--rosd-green); }
+.rosd-panel { display: none; }
+.rosd-panel.active { display: block; }
+
+/* ---------- Blocs ---------- */
+.rosd-block { margin: 12px 0 0; }
+.rosd-block h2 {
+  font-family: var(--rosd-head);
+  font-size: 22px;
+  font-weight: normal;
+  color: var(--rosd-slate);
+  border-bottom: 1px solid var(--rosd-iron);
+  margin: 0 0 6px;
+  padding: 0 0 2px;
+}
+.rosd-block h2 small { font-family: var(--rosd-body); font-size: 11px; color: var(--rosd-iron); }
+.rosd-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.rosd-form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px 12px; align-items: end; }
+.rosd-form-grid label, .rosd-wide { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--rosd-iron); }
+.rosd-wide { margin-top: 8px; }
+.rosd-check { display: flex !important; flex-direction: row !important; align-items: center; gap: 4px; font-size: 13px; }
+.rosd-check input { margin: 0; flex: 0 0 auto; }
+.rosd-inline { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 4px; }
+.rosd-inline input[type="number"] { width: 52px; }
+.rosd-hint { font-size: 11.5px; color: var(--rosd-iron); margin: 4px 0; font-style: italic; }
+.rosd-readout { font-size: 12px; color: var(--rosd-iron); }
+.rosd-readout span { font-family: var(--rosd-head); font-size: 22px; color: var(--rosd-ink); }
+
+/* ---------- Caractéristiques : plaques ---------- */
+.rosd-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 4px; }
+.rosd-stat {
+  background: #f1f2ee;
+  border: 1px solid #aeb2ab;
+  border-top: 4px solid var(--rosd-slate);
+  text-align: center;
+  padding: 4px 4px 6px;
+}
+.rosd-stat.split { border-top-color: #9a7b2f; }
+.rosd-health { border-top-color: var(--rosd-blood); }
+.rosd-stat-label { font-size: 12px; color: var(--rosd-iron); display: block; }
+.rosd-stat-label:hover { color: var(--rosd-green); text-decoration: underline; }
+.rosd-stat-value { font-family: var(--rosd-head); font-size: 38px; line-height: 1; color: var(--rosd-ink); margin: 2px 0 4px; }
+.rosd-stat-base { font-size: 22px; color: var(--rosd-iron); }
+.rosd-slash { font-size: 22px; color: #9aa09a; margin: 0 1px; }
+.rosd-stat-inputs { display: flex; gap: 3px; }
+.rosd-stat-inputs label { flex: 1; font-size: 10px; color: var(--rosd-iron); display: flex; flex-direction: column; }
+.rosd-stat-inputs input { width: 100%; height: 22px; text-align: center; padding: 0; }
+
+/* ---------- Compétences ---------- */
+.rosd-skill-grid { display: grid; grid-template-columns: 1fr; gap: 2px; }
+.rosd-skill { display: flex; align-items: center; justify-content: space-between; padding: 1px 4px; border-bottom: 1px dotted #c1c4be; }
+.rosd-skill a { font-size: 13px; color: var(--rosd-iron); }
+.rosd-skill a i { font-size: 10px; opacity: 0.5; }
+.rosd-skill.trained a { color: var(--rosd-ink); font-weight: 600; }
+.rosd-skill a:hover { color: var(--rosd-green); }
+.rosd-skill input { width: 46px; height: 22px; text-align: center; }
+
+/* ---------- Listes capacités / sorts ---------- */
+.rosd-list ol { list-style: none; margin: 0 0 8px; padding: 0; }
+.rosd-list li { border-bottom: 1px solid #c9ccc5; padding: 5px 0; }
+.rosd-list li.used .rosd-icon {
+  flex: 0 0 32px; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--rosd-slate); color: var(--rosd-silver);
+  border: 1px solid var(--rosd-iron); cursor: pointer; overflow: hidden;
+}
+.rosd-icon img { width: 100%; height: 100%; object-fit: cover; border: none; }
+.rosd-icon:hover { outline: 2px solid var(--rosd-green); }
+.rosd-list li.used .rosd-icon { opacity: 0.5; }
+.rosd-list-name { text-decoration: line-through; color: var(--rosd-iron); }
+.rosd-list li.used .rosd-desc { opacity: 0.55; }
+.rosd-list-row { display: flex; align-items: center; gap: 8px; }
+.rosd-list-row input[type="checkbox"] { margin: 0; flex: 0 0 auto; }
+.rosd-icon {
+  flex: 0 0 32px; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--rosd-slate); color: var(--rosd-silver);
+  border: 1px solid var(--rosd-iron); cursor: pointer; overflow: hidden;
+}
+.rosd-icon img { width: 100%; height: 100%; object-fit: cover; border: none; }
+.rosd-icon:hover { outline: 2px solid var(--rosd-green); }
+.rosd-list li.used .rosd-icon { opacity: 0.5; }
+.rosd-list-name { font-family: var(--rosd-head); font-size: 20px; color: var(--rosd-ink); }
+.rosd-en { font-size: 11px; color: var(--rosd-iron); flex: 1; }
+.rosd-tag { font-size: 11px; background: var(--rosd-slate); color: var(--rosd-silver); padding: 0 6px; border-radius: 2px; }
+.rosd-remove { color: var(--rosd-iron); padding: 0 4px; }
+.rosd-remove:hover { color: var(--rosd-blood); }
+.rosd-desc { margin: 2px 0 0 64px; font-size: 12px; color: #444b50; }
+.rosd-empty { font-style: italic; color: var(--rosd-iron); }
+.rosd-list > select { width: 100%; height: 28px; }
+.rosd-caster { margin-top: 10px; }
+.rosd-caster select { flex: 1; }
+
+/* ---------- Armes / emplacements ---------- */
+.rosd-attack-buttons { display: flex; gap: 8px; }
+.rosd.sheet .rosd-attack-buttons button { font-size: 14px; line-height: 32px; padding: 0 14px; }
+.rosd-slots ol { margin: 0; padding-left: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
+.rosd-slots li input { width: 100%; }
+.rosd-flags { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; }
+.rosd-rewards { margin: 6px 0; padding-left: 18px; font-size: 13px; }
+.rosd-ai { margin-top: 10px; font-size: 12px; background: #f1f2ee; border-left: 3px solid var(--rosd-slate); padding: 4px 8px; }
+.rosd-ai summary { cursor: pointer; font-weight: 600; }
+.rosd-ai ol { padding-left: 16px; margin: 6px 0; }
+
+/* ---------- Dialogues ---------- */
+.rosd-dialog .window-content { background: var(--rosd-stone); color: var(--rosd-ink); }
+.rosd-dialog fieldset { border: 1px solid #aeb2ab; margin: 6px 0; padding: 4px 8px; }
+.rosd-dialog legend { font-size: 12px; color: var(--rosd-iron); padding: 0 4px; }
+.rosd-dialog .form-group { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+.rosd-dialog .form-group label { flex: 1; font-size: 13px; }
+.rosd-dialog .form-group input[type="number"] { width: 70px; flex: 0 0 70px; }
+.rosd-dialog .form-group input[type="text"] { flex: 0 0 160px; }
+
+/* ---------- Cartes de chat ---------- */
+.rosd-card { font-family: var(--rosd-body); color: var(--rosd-ink); }
+.rosd-card header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  background: var(--rosd-slate); color: var(--rosd-silver);
+  margin: -2px -2px 6px; padding: 3px 8px;
+}
+.rosd-card h3 { font-family: var(--rosd-head); font-size: 20px; margin: 0; border: none; color: #f2f3ef; }
+.rosd-tn { font-size: 12px; }
+.rosd-card h3 .rosd-card-icon { width: 22px; height: 22px; border: none; vertical-align: middle; object-fit: cover; }
+.rosd-result { display: flex; align-items: baseline; gap: 10px; padding: 2px 6px; border-left: 4px solid var(--rosd-iron); }
+.rosd-result.ok { border-left-color: var(--rosd-green); }
+.rosd-result.ko { border-left-color: var(--rosd-blood); }
+.rosd-total { font-family: var(--rosd-head); font-size: 34px; line-height: 1; }
+.rosd-verdict { font-size: 15px; font-weight: 600; }
+.rosd-result.ok .rosd-verdict { color: var(--rosd-green); }
+.rosd-result.ko .rosd-verdict { color: var(--rosd-blood); }
+.rosd-detail { font-size: 11.5px; color: var(--rosd-iron); margin: 4px 0; }
+.rosd-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.rosd-side { border: 1px solid #b9bdb6; padding: 3px 5px; background: rgba(255, 255, 255, 0.35); }
+.rosd-side.win { border-color: var(--rosd-green); box-shadow: inset 0 3px 0 var(--rosd-green); }
+.rosd-side-name { font-size: 11px; color: var(--rosd-iron); }
+.rosd-side-name b { color: var(--rosd-ink); font-size: 13px; }
+.rosd-side-roll { display: flex; align-items: baseline; gap: 6px; }
+.rosd-die {
+  display: inline-block; min-width: 24px; text-align: center;
+  border: 1px solid var(--rosd-iron); font-weight: 700; font-size: 13px;
+}
+.rosd-die.nat20 { background: var(--rosd-green); color: #fff; border-color: var(--rosd-green); }
+.rosd-die.nat1 { background: var(--rosd-blood); color: #fff; border-color: var(--rosd-blood); }
+.rosd-dice { font-size: 10px; color: var(--rosd-iron); }
+.rosd-score { font-family: var(--rosd-head); font-size: 30px; line-height: 1; margin-left: auto; }
+.rosd-side-mods { font-size: 10.5px; color: var(--rosd-iron); }
+.rosd-crit { color: var(--rosd-green); }
+.rosd-verdict-line { margin: 6px 0 4px; font-size: 13px; }
+.rosd-dmg { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; margin: 3px 0; }
+.rosd-dmg-n { font-family: var(--rosd-head); font-size: 28px; color: var(--rosd-blood); line-height: 1; }
+.rosd-dmg small { color: var(--rosd-iron); display: block; }
+.rosd-injury { background: rgba(138, 44, 44, 0.08); border-left: 3px solid var(--rosd-blood); padding: 4px 6px; font-size: 12.5px; }
+.rosd-buttons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.rosd-card button {
+  flex: 1 1 45%;
+  font-size: 11.5px; line-height: 22px;
+  background: var(--rosd-green); color: #f2f3ef;
+  border: none; border-radius: 2px;
+}
+.rosd-card button:hover { background: var(--rosd-green-2); }
+.rosd-card .rosd-dmg button { flex: 0 0 auto; background: var(--rosd-blood); }
+
+/* ---------- Répertoire des acteurs ---------- */
+button.rosd-import { margin: 4px 0; width: 100%; }
+
+@media (prefers-reduced-motion: reduce) { .rosd * { transition: none !important; } }
+
+
+/* ---------- Fiche d'objet ---------- */
+.rosd.sheet.item .rosd-item-img { width: 72px; height: 72px; flex: 0 0 72px; }
+.rosd.sheet.item .rosd-name { font-size: 28px; height: 34px; }
+
+/* ---------- Objets glissés ---------- */
+.rosd-item-list { list-style: none; margin: 0; padding: 0; }
+.rosd-item { display: flex; align-items: center; gap: 8px; padding: 3px 4px; border-bottom: 1px solid #c9ccc5; cursor: grab; }
+.rosd-item:hover { background: rgba(62, 90, 69, 0.08); }
+.rosd-item.dragging { opacity: 0.4; }
+.rosd-item img { width: 28px; height: 28px; flex: 0 0 28px; border: 1px solid var(--rosd-iron); object-fit: cover; }
+.rosd-item-name { flex: 1; font-family: var(--rosd-head); font-size: 18px; color: var(--rosd-ink); }
+.rosd-item-cat { font-size: 11px; color: var(--rosd-iron); }
+.rosd-item-num { font-size: 12px; min-width: 40px; text-align: right; }
+.rosd-item a[data-action] { color: var(--rosd-iron); padding: 0 2px; }
+.rosd-item a[data-action]:hover { color: var(--rosd-green); }
+.rosd-drop-hint { border: 2px dashed #b9bdb6; padding: 10px; text-align: center; color: var(--rosd-iron); font-size: 13px; margin: 0; }
+.rosd-warn { color: var(--rosd-blood); font-weight: 600; font-style: normal; }
+.rosd.sheet.rosd-dragover .window-content { outline: 3px dashed var(--rosd-green); outline-offset: -6px; }
+.rosd-stat-item { font-size: 10.5px; color: var(--rosd-green); margin-top: 3px; font-weight: 600; cursor: help; }
+.rosd-item-main { flex: 1; min-width: 0; }
+.rosd-item-sub { font-size: 11px; color: var(--rosd-iron); }
+.rosd-item.unequipped { opacity: 0.6; }
+.rosd-item a.on { color: var(--rosd-green); }
+.rosd-active { color: var(--rosd-green); font-weight: 600; }
+.rosd-light .rosd-check { color: var(--rosd-ink) !important; }
+.rosd-bonus-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
