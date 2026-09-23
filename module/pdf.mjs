@@ -4,22 +4,22 @@ import { combatProfile, signed } from "./dice.mjs";
 /* ================================================================ */
 /* Données de la fiche                                              */
 /* ================================================================ */
-const TYPE_LABEL = { ranger: "Ranger", companion: "Compagnon", creature: "Créature" };
+const TYPE_LABEL = { ranger: "Ranger", companion: "Compagnon", creature: "Creature" };
 const clean = t => String(t ?? "").replace(/[“”″]/g, '"').replace(/[‘’]/g, "'").trim();
 
 export function collectSheetData(actor) {
   const s = actor.system;
   const type = actor.type;
-  const d = { type, name: actor.name, kicker: `RANGERS OF SHADOW DEEP · FICHE DE ${TYPE_LABEL[type].toUpperCase()}` };
+  const d = { type, name: actor.name, kicker: `RANGERS OF SHADOW DEEP · ${TYPE_LABEL[type].toUpperCase()} SHEET` };
 
   if (type === "ranger") {
-    d.subtitle = [s.player && `Joueur : ${s.player}`, `Niveau ${s.level}`, `${s.xp} PX`,
-      `Prochain niveau : ${s.nextLevelCost} PX`].filter(Boolean).join("   ·   ");
+    d.subtitle = [s.player && `Player: ${s.player}`, `Level ${s.level}`, `${s.xp} XP`,
+      `Next level: ${s.nextLevelCost} XP`].filter(Boolean).join("   ·   ");
   } else if (type === "companion") {
-    d.subtitle = [ROSD.companions[s.profile]?.label ?? "Compagnon", `${s.rp} PR`, s.owner && `Ranger : ${s.owner}`,
-      `Progression : ${s.progression} PP`].filter(Boolean).join("   ·   ");
+    d.subtitle = [ROSD.companions[s.profile]?.label ?? "Compagnon", `${s.rp} RP`, s.owner && `Ranger: ${s.owner}`,
+      `Advancement: ${s.progression} AP`].filter(Boolean).join("   ·   ");
   } else {
-    d.subtitle = [ROSD.bestiary[s.profile]?.label ?? "Créature", `${s.xp} PX`].join("   ·   ");
+    d.subtitle = [ROSD.bestiary[s.profile]?.label ?? "Creature", `${s.xp} XP`].join("   ·   ");
   }
 
   d.stats = Object.entries(ROSD.stats).map(([k, st]) => {
@@ -27,65 +27,70 @@ export function collectSheetData(actor) {
     const f = n => (k === "move" || k === "armour" ? String(n) : signed(n));
     return { label: st.label, value: v.mod ? `${f(v.value)}/${f(v.total)}` : f(v.total) };
   });
-  d.stats.push({ label: "Santé", value: `${s.health.value}/${s.health.max}`, health: true });
+  d.stats.push({ label: "Health", value: `${s.health.value}/${s.health.max}`, health: true });
 
   if (s.skills) d.skills = Object.entries(ROSD.skills).map(([k, l]) => [l, s.skills[k] ? signed(s.skills[k]) : "—"]);
 
   const cp = combatProfile(actor);
   d.combat = [
-    ["Mêlée", `${ROSD.meleeWeapons[s.weapons.melee]?.label ?? "—"} · Combat ${signed(cp.fight)} · dégâts ${signed(cp.meleeDmg)}`],
-    ["Tir", s.weapons.ranged === "none" ? "—" : `${ROSD.rangedWeapons[s.weapons.ranged]?.label ?? "Autre"} · Tir ${signed(cp.shoot)} · portée ${cp.range}"`]
+    ["Melee", `${ROSD.meleeWeapons[s.weapons.melee]?.label ?? "—"} · Fight ${signed(cp.fight)} · damage ${signed(cp.meleeDmg)}`],
+    ["Tir", s.weapons.ranged === "none" ? "—" : `${ROSD.rangedWeapons[s.weapons.ranged]?.label ?? "Other"} · Shoot ${signed(cp.shoot)} · range ${cp.range}"`]
   ];
   if (s.weapons.magic) d.combat.push(["Arme", "Magique"]);
-  if (s.weapons.mult > 1) d.combat.push(["Dégâts", `× ${s.weapons.mult}`]);
+  if (s.weapons.mult > 1) d.combat.push(["Damage", `× ${s.weapons.mult}`]);
 
   if (s.status) {
     const st = [];
-    if (s.status.poisoned) st.push("Empoisonné");
+    if (s.status.poisoned) st.push("Poisoned");
     if (s.status.diseased) st.push("Malade");
-    if (s.status.hunger) st.push(`Faim et soif ×${s.status.hunger}`);
+    if (s.status.hunger) st.push(`Hunger & Thirst ×${s.status.hunger}`);
     d.status = st.length ? st.join(", ") : "Aucun";
   }
 
   if (type === "ranger") {
-    d.gear = ["slot1", "slot2", "slot3", "slot4", "slot5", "slot6"].map((k, i) => [`Emplacement ${i + 1}`, s.gear[k] || "—"]);
-    if (s.gear.freeKnife) d.gear.push(["Dague gratuite", s.gear.freeKnife]);
-    if (s.gear.magicAmmo) d.gear.push(["Munition magique", s.gear.magicAmmo]);
-    if (s.casterItem) d.gear.push(["Objet de lanceur", ROSD.casterItems[s.casterItem]]);
+    d.gear = ["slot1", "slot2", "slot3", "slot4", "slot5", "slot6"].map((k, i) => [`Slot ${i + 1}`, s.gear[k] || "—"]);
+    if (s.gear.freeKnife) d.gear.push(["Free dagger", s.gear.freeKnife]);
+    if (s.gear.magicAmmo) d.gear.push(["Magic ammunition", s.gear.magicAmmo]);
+    if (s.casterItem) d.gear.push(["Spellcaster item", ROSD.casterItems[s.casterItem]]);
   } else if (type === "companion") {
-    d.gear = [["Équipement", s.baseGear || "—"], ["Objet 1", s.gear.item1 || "—"], ["Objet 2", s.gear.item2 || "—"]];
+    d.gear = [["Equipment", s.baseGear || "—"], ["Item 1", s.gear.item1 || "—"], ["Item 2", s.gear.item2 || "—"]];
   } else {
     const f = s.flags, t = [];
-    if (f.undead) t.push("Mort-vivant");
+    if (f.undead) t.push("Undead");
     if (f.animal) t.push("Animal");
-    if (f.large) t.push("Grand");
-    if (f.flying) t.push("Volant");
+    if (f.large) t.push("Large");
+    if (f.flying) t.push("Flying");
     if (f.poison) t.push("Poison");
-    if (f.disease) t.push(`Maladie (ND ${f.disease})`);
-    if (f.horrific) t.push(`Horrifique (ND ${f.horrific})`);
-    if (f.partialImmunity) t.push("Immunité partielle");
-    if (f.immuneCrit) t.push("Immunisé aux critiques");
-    if (f.spellcaster) t.push("Lanceur de sorts");
+    if (f.disease) t.push(`Disease (TN ${f.disease})`);
+    if (f.horrific) t.push(`Horrific (TN ${f.horrific})`);
+    if (f.partialImmunity) t.push("Partial immunity");
+    if (f.immuneCrit) t.push("Immune to criticals");
+    if (f.spellcaster) t.push("Spellcaster");
     d.gear = [["Traits", t.join(", ") || "—"]];
-    if (s.traits) d.gear.push(["Notes du profil", s.traits]);
+    if (s.traits) d.gear.push(["Profile notes", s.traits]);
   }
 
   // Objets glissés sur la fiche
   const items = actor.items?.contents ?? [];
   for (const i of items) {
     d.gear ??= [];
-    d.gear.push([i.name, `×${i.system.quantity} · ${i.system.slots} empl.${i.system.magic ? " · magique" : ""}${i.system.description ? " — " + i.system.description : ""}`]);
+    d.gear.push([i.name, `×${i.system.quantity} · ${i.system.slots} slot(s)${i.system.magic ? " · magic" : ""}${i.system.description ? " — " + i.system.description : ""}`]);
   }
 
   const list = (arr, table) => (arr ?? []).map(e => {
     const x = table[e.key] ?? {};
     let tag = "";
-    if (x.attack) tag = `Attaque ${signed(x.attack)}`;
-    else if (x.will) tag = `Volonté ND ${x.will}`;
-    else if (x.heal) tag = `Soins ${x.heal}`;
+    if (x.attack) tag = `Attack ${signed(x.attack)}`;
+    else if (x.will) tag = `Will TN ${x.will}`;
+    else if (x.heal) tag = `Heal ${x.heal}`;
     return { label: x.label ?? e.key, en: x.en ?? "", desc: x.desc ?? "", used: e.used, tag };
   });
   d.abilities = list(s.abilities, ROSD.abilities);
+  const tl = (arr, table) => (Array.isArray(arr) ? arr : []).map(e => ({ label: table[e.key]?.label ?? e.key, en: table[e.key]?.cost ?? "",
+    desc: table[e.key]?.desc ?? "", used: false, tag: "" }));
+  d.traits = tl(s.traits, ROSD.traits ?? {});
+  d.limitations = tl(s.limitations, ROSD.limitations ?? {});
+  if (s.archetype && ROSD.archetypes?.[s.archetype]) d.subtitle += `   ·   ${ROSD.archetypes[s.archetype].label}`;
   d.spells = list(s.spells, ROSD.spells);
 
   const notes = [];
@@ -93,21 +98,21 @@ export function collectSheetData(actor) {
   if (type === "ranger") {
     const players = globalThis.game?.settings?.get("rosd", "players") ?? 1;
     const r = ROSD.recruitment[players] ?? ROSD.recruitment[1];
-    notes.push(["Recrutement", `${s.brp} PR de base · ${Math.max(0, r.calc(s.brp) + (s.skills.leadership ?? 0))} PR totaux (${players} joueur${players > 1 ? "s" : ""}) · ${r.max} compagnons max`]);
-    add("Compagnons", s.companions);
-    add("Blessures permanentes", s.injuries);
-    add("Objets magiques personnels", s.gear.personalMagic);
-    add("Trésors", s.treasure);
-    add("Points de construction", s.buildPoints);
-    add("Historique", s.background);
+    notes.push(["Recruitment", `${s.brp} base RP · ${Math.max(0, r.calc(s.brp) + (s.skills.leadership ?? 0))} total RP (${players} player${players > 1 ? "s" : ""}) · max ${r.max} companions`]);
+    add("Companions", s.companions);
+    add("Permanent Injuries", s.injuries);
+    add("Personal magic items", s.gear.personalMagic);
+    add("Treasure", s.treasure);
+    add("Build Points", s.buildPoints);
+    add("Background", s.background);
     add("Notes", s.notes);
   } else if (type === "companion") {
-    if (s.earnedRewards?.length) notes.push(["Récompenses obtenues", s.earnedRewards.join(" ; ")]);
-    notes.push(["Prochaine récompense", s.nextReward]);
-    add("Blessures permanentes", s.injuries);
+    if (s.earnedRewards?.length) notes.push(["Rewards earned", s.earnedRewards.join(" ; ")]);
+    notes.push(["Next reward", s.nextReward]);
+    add("Permanent Injuries", s.injuries);
     add("Notes", s.notes);
   } else {
-    add("Règles spéciales", s.special);
+    add("Special rules", s.special);
     add("Notes", s.notes);
   }
   d.notes = notes;
@@ -190,7 +195,7 @@ export function renderSheetPdf(jsPDF, d, img) {
   };
   let yl = top, yr = top;
   if (d.skills) {
-    yl = colTitle("Compétences", xL, yl);
+    yl = colTitle("Skills", xL, yl);
     for (const [k, v] of d.skills) {
       font(v === "—" ? "normal" : "bold", 9); color(v === "—" ? IRON : INK);
       doc.text(k, xL, yl + 3.6); doc.text(v, xL + colW, yl + 3.6, { align: "right" });
@@ -200,8 +205,8 @@ export function renderSheetPdf(jsPDF, d, img) {
   const rx = d.skills ? xR : xL;
   yr = colTitle("Combat", rx, yr);
   yr = kv(d.combat, rx, yr, 16);
-  if (d.status) { yr += 2; yr = colTitle("États", rx, yr); yr = kv([["Actuels", d.status]], rx, yr, 16); }
-  if (d.gear?.length) { yr += 2; yr = colTitle(d.type === "creature" ? "Traits" : "Équipement", rx, yr); yr = kv(d.gear, rx, yr, 30); }
+  if (d.status) { yr += 2; yr = colTitle("Status", rx, yr); yr = kv([["Current", d.status]], rx, yr, 16); }
+  if (d.gear?.length) { yr += 2; yr = colTitle(d.type === "creature" ? "Traits" : "Equipment", rx, yr); yr = kv(d.gear, rx, yr, 30); }
   y = Math.max(yl, yr) + 3;
 
   /* Capacités et sorts */
@@ -225,12 +230,14 @@ export function renderSheetPdf(jsPDF, d, img) {
     }
     font("italic", 7.5); color(IRON); ensure(5); doc.text(usedLabel, M, y + 2); y += 4;
   };
-  powers("Capacités héroïques", d.abilities, "Case cochée : capacité déjà utilisée pendant le scénario en cours.");
-  powers("Sorts", d.spells, "Case cochée : sort déjà lancé pendant le scénario en cours.");
+  powers("Heroic Abilities", d.abilities, "A ticked box means the ability has been used this scenario.");
+  powers("Spells", d.spells, "A ticked box means the spell has been cast this scenario.");
+  powers("Traits", d.traits, "Permanent traits (A Gathering of Heroes).");
+  powers("Limitations", d.limitations, "Limitations (A Gathering of Heroes).");
 
   /* Notes */
   if (d.notes?.length) {
-    section(d.type === "creature" ? "Règles et notes" : "Campagne et notes");
+    section(d.type === "creature" ? "Rules & notes" : "Campaign & notes");
     for (const [t, v] of d.notes) {
       ensure(9);
       font("bold", 9.5); color(GREEN); doc.text(t, M, y + 4); y += 5.5;
@@ -258,7 +265,7 @@ async function loadJsPDF() {
     const el = document.createElement("script");
     el.src = "systems/rosd/lib/jspdf.umd.min.js";
     el.onload = resolve;
-    el.onerror = () => reject(new Error("impossible de charger jsPDF"));
+    el.onerror = () => reject(new Error("could not load jsPDF"));
     document.head.append(el);
   });
   return globalThis.jspdf.jsPDF;
@@ -279,19 +286,19 @@ async function imageToJpeg(src) {
     ctx.drawImage(im, (size - iw * r) / 2, (size - ih * r) / 2, iw * r, ih * r);
     return canvas.toDataURL("image/jpeg", 0.9);
   } catch (e) {
-    console.warn("ROSD | Portrait non exporté :", e);
+    console.warn("ROSD | Portrait not exported:", e);
     return null;
   }
 }
 
 export async function exportActorPdf(actor) {
   try {
-    ui.notifications.info("Création du PDF…");
+    ui.notifications.info("Creating the PDF…");
     const jsPDF = await loadJsPDF();
     const doc = renderSheetPdf(jsPDF, collectSheetData(actor), await imageToJpeg(actor.img));
-    doc.save(`${actor.name.replace(/[\\/:*?"<>|]+/g, "_")} - fiche ROSD.pdf`);
+    doc.save(`${actor.name.replace(/[\\/:*?"<>|]+/g, "_")} - ROSD sheet.pdf`);
   } catch (err) {
     console.error(err);
-    ui.notifications.error(`Export PDF impossible : ${err.message}`);
+    ui.notifications.error(`PDF export failed: ${err.message}`);
   }
 }

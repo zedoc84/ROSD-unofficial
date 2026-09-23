@@ -16,7 +16,7 @@ function pickImage(current, callback) {
     type: "image", current: current || "",
     callback: path => {
       if (!IMAGE_EXT.test(path.split("?")[0])) {
-        return ui.notifications.warn("Choisissez une image PNG ou JPEG (.png, .jpg, .jpeg).");
+        return ui.notifications.warn("Please choose a PNG or JPEG image (.png, .jpg, .jpeg).");
       }
       return callback(path);
     }
@@ -25,6 +25,18 @@ function pickImage(current, callback) {
 
 const escapeText = t => String(t ?? "").replace(/[&<>"']/g, c =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/** Options HTML groupées par livre (livre de base d'abord), triées alphabétiquement. */
+function groupedOptions(table, selected, suffix) {
+  const groups = {};
+  for (const [k, v] of Object.entries(table)) (groups[v.src ?? "Core Rulebook"] ??= []).push([k, v]);
+  const order = Object.keys(groups).sort((a, b) =>
+    (a === "Core Rulebook" ? -1 : b === "Core Rulebook" ? 1 : a.localeCompare(b)));
+  return order.map(src => `<optgroup label="${escapeText(src)}">` + groups[src]
+    .sort((a, b) => a[1].label.localeCompare(b[1].label, "fr"))
+    .map(([k, v]) => `<option value="${k}"${k === selected ? " selected" : ""}>${escapeText(v.label)} (${suffix(v)})</option>`)
+    .join("") + "</optgroup>").join("");
+}
 
 const labelMap = obj => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, v.label ?? v]));
 
@@ -57,6 +69,7 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       newScenario: ROSDBaseSheet.#onNewScenario,
       survival: ROSDBaseSheet.#onSurvival,
       applyProfile: ROSDBaseSheet.#onApplyProfile,
+      applyArchetype: ROSDBaseSheet.#onApplyArchetype,
       levelUp: ROSDBaseSheet.#onLevelUp
     }
   };
@@ -72,8 +85,8 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       btn.type = "button";
       btn.className = "header-control icon fa-solid fa-file-pdf";
       btn.dataset.action = "exportPdf";
-      btn.dataset.tooltip = "Exporter en PDF";
-      btn.setAttribute("aria-label", "Exporter en PDF");
+      btn.dataset.tooltip = "Export to PDF";
+      btn.setAttribute("aria-label", "Export to PDF");
       const first = header.querySelector("button.header-control");
       if (first) first.before(btn); else header.append(btn);
     }
@@ -120,20 +133,37 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       context.abilityChoices = Object.fromEntries(Object.entries(ROSD.abilities)
         .filter(([k]) => !owned.has(k))
         .sort((a, b) => a[1].label.localeCompare(b[1].label))
-        .map(([k, v]) => [k, v.label]));
+        .map(([k, v]) => [k, v.label + (v.src && v.src !== "Core Rulebook" ? ` — ${v.src}` : "")]));
     }
     if (sys.spells) {
       context.spells = sys.spells.map((s, i) => {
         const sp = ROSD.spells[s.key] ?? {};
         let tag = "";
         if (sp.attack) tag = `Attaque ${signed(sp.attack)}`;
-        else if (sp.will) tag = `Volonté ND ${sp.will}`;
+        else if (sp.will) tag = `Will TN ${sp.will}`;
         else if (sp.heal) tag = `Soins ${sp.heal}`;
         return { ...s, i, label: sp.label ?? s.key, en: sp.en ?? "", desc: sp.desc ?? "", tag };
       });
       context.spellChoices = Object.fromEntries(Object.entries(ROSD.spells)
         .sort((a, b) => a[1].label.localeCompare(b[1].label))
-        .map(([k, v]) => [k, v.label]));
+        .map(([k, v]) => [k, v.label + (v.src && v.src !== "Core Rulebook" ? ` — ${v.src}` : "")]));
+    }
+    // Traits et limitations (A Gathering of Heroes)
+    for (const [list, table] of [["traits", ROSD.traits], ["limitations", ROSD.limitations]]) {
+      if (!Array.isArray(sys[list])) continue;
+      const owned = new Set(sys[list].map(e => e.key));
+      context[list] = sys[list].map((e, i) => ({ ...e, i, label: table[e.key]?.label ?? e.key,
+        tag: table[e.key]?.cost ?? "", desc: table[e.key]?.desc ?? "" }));
+      context[`${list}Choices`] = Object.fromEntries(Object.entries(table)
+        .filter(([k]) => !owned.has(k))
+        .sort((a, b) => a[1].label.localeCompare(b[1].label))
+        .map(([k, v]) => [k, `${v.label} (${v.cost})`]));
+    }
+    if (actor.type === "ranger") {
+      context.archetypeChoices = Object.fromEntries(Object.entries(ROSD.archetypes).map(([k, v]) => [k, v.label]));
+      const a = ROSD.archetypes[sys.archetype];
+      if (a) context.archetypeInfo = { ...a, statLine: `M ${a.stats[0]} · C +${a.stats[1]} · T +${a.stats[2]} · A ${a.stats[3]} · V +${a.stats[4]} · S ${a.stats[5]}`,
+        traitNames: a.traits.map(t => ROSD.traits[t]?.label).join(", "), limitationNames: a.limitations.map(t => ROSD.limitations[t]?.label).join(", ") };
     }
     context.itemsList = actor.items.contents
       .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
@@ -141,12 +171,12 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         const sy = i.system;
         const wielded = actor.system.weapons?.melee === `item:${i.id}` || actor.system.weapons?.ranged === `item:${i.id}`;
         const bonus = Object.entries(sy.bonus).filter(([, v]) => v)
-          .map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${{ move: "M", fight: "C", shoot: "T", armour: "A", will: "V", dmg: "dég." }[k]}`).join(" ");
+          .map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${{ move: "M", fight: "C", shoot: "T", armour: "A", will: "V", dmg: "dmg" }[k]}`).join(" ");
         const hasCharges = sy.charges.max > 0;
         return {
           id: i.id, name: i.name, img: i.img, magic: sy.magic, quantity: sy.quantity, slots: sy.slots,
           category: ITEM_CATEGORIES[sy.category] ?? "", equipped: sy.equipped, wielded,
-          isWeapon: sy.isWeapon, weaponInfo: sy.isWeapon ? `${sy.weapon.dmg >= 0 ? "+" : ""}${sy.weapon.dmg} dég.${sy.weapon.range ? ` · ${sy.weapon.range}"` : ""}` : "",
+          isWeapon: sy.isWeapon, weaponInfo: sy.isWeapon ? `${sy.weapon.dmg >= 0 ? "+" : ""}${sy.weapon.dmg} dmg${sy.weapon.range ? ` · ${sy.weapon.range}"` : ""}` : "",
           bonus, active: sy.activation && sy.active,
           charges: hasCharges ? `${sy.charges.value}/${sy.charges.max}` : "",
           usable: (sy.consumable && sy.quantity > 0) || (sy.activation && !sy.active && (!hasCharges || sy.charges.value > 0))
@@ -166,14 +196,14 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       const text = ["slot1", "slot2", "slot3", "slot4", "slot5", "slot6"].filter(k => s.gear[k]?.trim()).length;
       const used = text + itemSlots;
       return { used, max: 6, over: used > 6,
-        text: `Emplacements utilisés : ${used} / 6 (${text} en cases texte, ${itemSlots} par les objets). La dague gratuite et les objets à 0 emplacement ne comptent pas.` };
+        text: `Item slots used: ${used} / 6 (${text} typed in, ${itemSlots} from items). The free dagger and 0-slot items do not count.` };
     }
     if (actor.type === "companion") {
-      if (s.animal) return { used: 0, max: 0, over: actor.items.size > 0, text: "Un animal ne peut porter ni objet ni trésor." };
+      if (s.animal) return { used: 0, max: 0, over: actor.items.size > 0, text: "An animal may not carry items or treasure." };
       const text = ["item1", "item2"].filter(k => s.gear[k]?.trim()).length;
       const used = text + itemSlots;
       return { used, max: 2, over: used > 2,
-        text: `Objets portés : ${used} / 2 en plus de l'équipement de base (${text} en cases texte, ${itemSlots} par les objets).` };
+        text: `Items carried: ${used} / 2 on top of the base gear (${text} typed in, ${itemSlots} from items).` };
     }
     return null;
   }
@@ -228,7 +258,7 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const data = TE.getDragEventData(event);
     if (data?.type !== "Item") return;
     const actor = this.document;
-    if (!actor.isOwner) return ui.notifications.warn("Vous ne possédez pas cette fiche.");
+    if (!actor.isOwner) return ui.notifications.warn("You do not own this sheet.");
     const item = await Item.implementation.fromDropData(data);
     if (!item) return;
 
@@ -244,9 +274,9 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       return actor.updateEmbeddedDocuments("Item", updates);
     }
 
-    if (item.type !== "objet") return ui.notifications.warn("Seuls les objets peuvent être déposés sur cette fiche.");
+    if (item.type !== "objet") return ui.notifications.warn("Only items can be dropped on this sheet.");
     if (actor.type === "companion" && actor.system.animal) {
-      return ui.notifications.warn(`${actor.name} est un animal : il ne peut porter ni objet ni trésor.`);
+      return ui.notifications.warn(`${actor.name} is an animal: it cannot carry items or treasure.`);
     }
 
     // Empilement : même nom, non magique → on ajoute à la quantité
@@ -268,12 +298,12 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (source && source.documentName === "Actor" && !(event.ctrlKey || event.altKey || event.metaKey)) {
       if (source.isOwner) {
         await item.delete();
-        ui.notifications.info(`${item.name} : transféré de ${source.name} à ${actor.name}.`);
+        ui.notifications.info(`${item.name}: moved from ${source.name} to ${actor.name}.`);
       }
     }
 
     const info = this.#slotInfo();
-    if (info?.over) ui.notifications.warn(`${actor.name} dépasse sa capacité : ${info.used} / ${info.max}.`);
+    if (info?.over) ui.notifications.warn(`${actor.name} is over capacity: ${info.used} / ${info.max}.`);
   }
 
   /* ------------------------- actions sur les objets ------------------------- */
@@ -285,7 +315,7 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const item = this.document.items.get(target.closest("[data-item-id]").dataset.itemId);
     if (!item) return;
     const ok = await foundry.applications.api.DialogV2.confirm({
-      window: { title: "Retirer l'objet" }, content: `<p>Retirer <b>${item.name}</b> de ${this.document.name} ?</p>` });
+      window: { title: "Remove item" }, content: `<p>Remove <b>${item.name}</b> from ${this.document.name}?</p>` });
     if (!ok) return;
     const w = this.document.system.weapons ?? {}, upd = {};
     if (w.melee === `item:${item.id}`) upd["system.weapons.melee"] = this.document.type === "creature" ? "natural" : "unarmed";
@@ -302,7 +332,7 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this.document }),
       content: `<div class="rosd-card"><header><h3>${item.name}</h3><span class="rosd-tn">${ITEM_CATEGORIES[s.category] ?? ""}${s.magic ? " · magique" : ""}</span></header>
-        <p>${String(desc).replace(/\n/g, "<br>") || "<i>Aucune description.</i>"}</p></div>`
+        <p>${String(desc).replace(/\n/g, "<br>") || "<i>No description.</i>"}</p></div>`
     });
   }
 
@@ -323,38 +353,38 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       const list = sy.property === "recoverSpell" ? "spells" : "abilities";
       const table = list === "spells" ? ROSD.spells : ROSD.abilities;
       const used = (actor.system[list] ?? []).filter(e => e.used);
-      if (!used.length) return ui.notifications.warn(list === "spells" ? "Aucun sort déjà lancé." : "Aucune capacité déjà utilisée.");
+      if (!used.length) return ui.notifications.warn(list === "spells" ? "No spell has been cast yet." : "No Heroic Ability has been used yet.");
       const key = await foundry.applications.api.DialogV2.wait({
         window: { title: item.name }, classes: ["rosd", "rosd-dialog"],
-        content: `<div class="form-group"><label>Récupérer</label><select name="k">${used.map(e => `<option value="${e.key}">${table[e.key]?.label ?? e.key}</option>`).join("")}</select></div>`,
-        buttons: [{ action: "ok", label: "Récupérer", default: true, callback: (e, b) => b.form.elements.k.value }, { action: "cancel", label: "Annuler" }],
+        content: `<div class="form-group"><label>Recover</label><select name="k">${used.map(e => `<option value="${e.key}">${table[e.key]?.label ?? e.key}</option>`).join("")}</select></div>`,
+        buttons: [{ action: "ok", label: "Recover", default: true, callback: (e, b) => b.form.elements.k.value }, { action: "cancel", label: "Cancel" }],
         rejectClose: false });
       if (!key || key === "cancel") return;
       await markUsed(actor, list, key, false);
-      notes.push(`récupère ${table[key]?.label ?? key}`);
+      notes.push(`recovers ${table[key]?.label ?? key}`);
     }
 
     // Effets immédiats
     const h = actor.system.health, upd = {};
-    if (sy.use.fullHeal) { upd["system.health.value"] = h.max; notes.push("revient à pleine Santé"); }
-    else if (sy.use.heal) { upd["system.health.value"] = Math.min(h.max, h.value + sy.use.heal); notes.push(`récupère jusqu'à ${sy.use.heal} Santé`); }
-    if (sy.use.tempHealth) { upd["system.health.value"] = (upd["system.health.value"] ?? h.value) + sy.use.tempHealth; notes.push(`+${sy.use.tempHealth} Santé temporaire`); }
-    if (sy.use.cure && actor.system.status) { upd["system.status.poisoned"] = false; notes.push("n'est plus empoisonné"); }
-    if (sy.use.cureDisease && actor.system.status) { upd["system.status.diseased"] = false; notes.push("est guéri de la maladie"); }
+    if (sy.use.fullHeal) { upd["system.health.value"] = h.max; notes.push("is restored to full Health"); }
+    else if (sy.use.heal) { upd["system.health.value"] = Math.min(h.max, h.value + sy.use.heal); notes.push(`recovers up to ${sy.use.heal} Health`); }
+    if (sy.use.tempHealth) { upd["system.health.value"] = (upd["system.health.value"] ?? h.value) + sy.use.tempHealth; notes.push(`+${sy.use.tempHealth} temporary Health`); }
+    if (sy.use.cure && actor.system.status) { upd["system.status.poisoned"] = false; notes.push("is no longer poisoned"); }
+    if (sy.use.cureDisease && actor.system.status) { upd["system.status.diseased"] = false; notes.push("is cured of disease"); }
     if (Object.keys(upd).length) await actor.update(upd);
 
     // Activation (bonus jusqu'à la fin du scénario)
     if (sy.activation && !sy.active) {
       await item.update({ "system.active": true });
-      const b = Object.entries(sy.bonus).filter(([, v]) => v).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${{ move: "Mouvement", fight: "Combat", shoot: "Tir", armour: "Armure", will: "Volonté", dmg: "dégâts" }[k]}`);
-      if (b.length) notes.push(`bonus actifs : ${b.join(", ")}`);
-      if (sy.property === "magic") notes.push("l'arme compte comme magique");
+      const b = Object.entries(sy.bonus).filter(([, v]) => v).map(([k, v]) => `${v > 0 ? "+" : ""}${v} ${{ move: "Move", fight: "Fight", shoot: "Shoot", armour: "Armour", will: "Will", dmg: "damage" }[k]}`);
+      if (b.length) notes.push(`active bonuses: ${b.join(", ")}`);
+      if (sy.property === "magic") notes.push("the weapon counts as magic");
     }
     await spendItem(item);
 
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor }),
-      content: `<div class="rosd-card"><header><h3>${escapeText(item.name)}</h3><span class="rosd-tn">${sy.activation && !sy.consumable ? "activé" : "utilisé"}</span></header>
+      content: `<div class="rosd-card"><header><h3>${escapeText(item.name)}</h3><span class="rosd-tn">${sy.activation && !sy.consumable ? "active" : "used"}</span></header>
         <p>${escapeText(actor.name)} ${notes.length ? notes.join(" ; ") : "utilise l'objet"}.</p>
         ${sy.description ? `<p class="rosd-detail">${escapeText(sy.description)}</p>` : ""}</div>`
     });
@@ -438,8 +468,8 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const entry = this.document.system.abilities[Number(target.dataset.index)];
     if (entry.used) {
       const ok = await foundry.applications.api.DialogV2.confirm({
-        window: { title: "Capacité déjà utilisée" },
-        content: "<p>Chaque capacité ne s'utilise qu'une fois par scénario. L'utiliser quand même ?</p>" });
+        window: { title: "Ability already used" },
+        content: "<p>Each Heroic Ability may only be used once per scenario. Use it anyway?</p>" });
       if (!ok) return;
     }
     return useAbility(this.document, entry.key);
@@ -447,11 +477,11 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static async #onDescribe(event, target) {
     const list = target.dataset.list;
     const entry = this.document.system[list][Number(target.dataset.index)];
-    const data = (list === "spells" ? ROSD.spells : ROSD.abilities)[entry.key];
+    const data = ({ spells: ROSD.spells, abilities: ROSD.abilities, traits: ROSD.traits, limitations: ROSD.limitations }[list] ?? {})[entry.key];
     if (!data) return;
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this.document }),
-      content: `<div class="rosd-card"><header><h3>${data.label}</h3><span class="rosd-tn">${data.en}</span></header><p>${data.desc}</p></div>`
+      content: `<div class="rosd-card"><header><h3>${data.label}</h3><span class="rosd-tn">${data.en ?? data.cost ?? ""}</span></header><p>${data.desc}</p></div>`
     });
   }
   static async #onToggleUsed(event, target) {
@@ -471,12 +501,12 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static async #onNewScenario() {
     const actor = this.document;
     const res = await foundry.applications.api.DialogV2.wait({
-      window: { title: "Nouveau scénario" },
-      content: `<p>Réinitialiser les capacités et sorts utilisés et retirer le poison ?</p>
-        <div class="form-group"><label>Remettre la Santé au maximum</label><input type="checkbox" name="heal" checked></div>`,
+      window: { title: "New Scenario" },
+      content: `<p>Reset used Heroic Abilities and spells, and remove poison?</p>
+        <div class="form-group"><label>Restore Health to maximum</label><input type="checkbox" name="heal" checked></div>`,
       buttons: [
-        { action: "ok", label: "Réinitialiser", default: true, callback: (e, b) => ({ heal: b.form.elements.heal.checked }) },
-        { action: "cancel", label: "Annuler" }
+        { action: "ok", label: "Reset", default: true, callback: (e, b) => ({ heal: b.form.elements.heal.checked }) },
+        { action: "cancel", label: "Cancel" }
       ], rejectClose: false });
     if (!res || res === "cancel") return;
     const s = actor.system;
@@ -505,13 +535,42 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static #onSurvival() { return rollSurvival(this.document); }
 
+  /** Applique la ligne de base, les compétences, traits et limitations d'un archétype. */
+  static async #onApplyArchetype() {
+    const actor = this.document;
+    const a = ROSD.archetypes[actor.system.archetype];
+    if (!a) return ui.notifications.warn("Choose an archetype first.");
+    const ok = await foundry.applications.api.DialogV2.confirm({
+      window: { title: a.label },
+      content: `<p>Replace the base stats, starting skills and Recruitment Points of <b>${actor.name}</b> with those of the archetype, and add its traits and limitations?</p>
+        <p class="rosd-hint">Modifiers, abilities, spells and items are left untouched. Then spend your ${a.bp} Build Points.</p>` });
+    if (!ok) return;
+    const [m, f, sh, ar, w, h] = a.stats;
+    const upd = {
+      "system.stats.move.value": m, "system.stats.fight.value": f, "system.stats.shoot.value": sh,
+      "system.stats.armour.value": ar, "system.stats.will.value": w,
+      "system.health.max": h, "system.health.value": h, "system.brp": a.rp,
+      "system.buildPoints": `${a.label}: ${a.bp} Build Points.\n${a.notes}`
+    };
+    for (const k of Object.keys(ROSD.skills)) upd[`system.skills.${k}`] = a.skills[k] ?? 0;
+    const merge = (list, keys) => {
+      const arr = foundry.utils.deepClone(actor.system[list] ?? []);
+      for (const key of keys) if (!arr.some(e => e.key === key)) arr.push({ key, used: false, img: "" });
+      return arr;
+    };
+    upd["system.traits"] = merge("traits", a.traits);
+    upd["system.limitations"] = merge("limitations", a.limitations);
+    await actor.update(upd);
+    ui.notifications.info(`Archetype applied: ${a.label}.`);
+  }
+
   static async #onApplyProfile() {
     const actor = this.document;
     const sel = this.element.querySelector("select[data-profile]");
     const key = sel?.value;
     const table = actor.type === "companion" ? ROSD.companions : ROSD.bestiary;
     const p = table[key];
-    if (!p) return ui.notifications.warn("Choisissez d'abord un profil dans la liste.");
+    if (!p) return ui.notifications.warn("Choose a profile from the list first.");
     const [m, f, s, a, w, h] = p.stats;
     const upd = {
       name: !actor.name || /^(new|nouve)/i.test(actor.name) ? p.label : actor.name,
@@ -520,8 +579,11 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       "system.stats.armour.value": a, "system.stats.will.value": w,
       "system.health.max": h, "system.health.value": h,
       "system.weapons.melee": p.melee ?? (actor.type === "creature" ? "natural" : "hand"),
-      "system.weapons.ranged": p.ranged ?? "none"
+      "system.weapons.ranged": ROSD.rangedWeapons[p.ranged] ? p.ranged : "none",
+      "system.weapons.dmgBonus": p.dmg ?? 0
     };
+    if (p.spells) upd["system.spells"] = p.spells.map(key => ({ key, used: false, img: "" }));
+    if (p.abilities) upd["system.abilities"] = p.abilities.map(key => ({ key, used: false, img: "" }));
     if (actor.type === "companion") {
       Object.assign(upd, { "system.rp": p.rp, "system.baseGear": p.gear, "system.animal": !!p.animal });
       for (const k of Object.keys(ROSD.skills)) upd[`system.skills.${k}`] = p.skills?.[k] ?? 0;
@@ -531,12 +593,13 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         "system.flags.undead": !!p.undead, "system.flags.animal": !!p.animal,
         "system.flags.large": !!p.large, "system.flags.flying": !!p.flying,
         "system.flags.poison": !!p.poison, "system.flags.disease": p.disease ?? 0,
-        "system.flags.horrific": p.horrific ?? 0, "system.flags.partialImmunity": !!p.partialImmunity
+        "system.flags.horrific": p.horrific ?? 0, "system.flags.partialImmunity": !!p.partialImmunity,
+        "system.flags.spellcaster": !!p.spellcaster, "system.flags.immuneCrit": !!p.immuneCrit
       });
     }
     await actor.update(upd);
     if (actor.type === "companion" && !p.animal) {
-      ui.notifications.info("Pensez à attribuer +3 à une compétence que le compagnon ne possède pas encore.");
+      ui.notifications.info("Remember to assign +3 to a skill the companion does not already have.");
     }
   }
 
@@ -544,13 +607,13 @@ class ROSDBaseSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const actor = this.document;
     const s = actor.system;
     const cost = ROSD.xpCost(s.level + 1);
-    if (s.xp < cost) return ui.notifications.warn(`Il faut ${cost} PX pour atteindre le niveau ${s.level + 1}.`);
+    if (s.xp < cost) return ui.notifications.warn(`${cost} XP are needed to reach level ${s.level + 1}.`);
     await actor.update({ "system.level": s.level + 1, "system.xp": s.xp - cost });
     ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor }),
       content: `<div class="rosd-card"><header><h3>Niveau ${s.level + 1} !</h3></header>
         <p>Bonus : <b>${ROSD.levelBonus(s.level + 1)}</b>.</p>
-        ${s.spells?.length ? "<p>Lanceur de sorts : peut échanger un sort connu contre un autre.</p>" : ""}</div>`
+        ${s.spells?.length ? "<p>Spellcaster: may swap one known spell for another.</p>" : ""}</div>`
     });
   }
 }
@@ -579,8 +642,7 @@ export class CompanionSheet extends ROSDBaseSheet {
 
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
-    ctx.profileChoices = Object.fromEntries(Object.entries(ROSD.companions)
-      .map(([k, v]) => [k, `${v.label} (${v.rp} PR)`]));
+    ctx.profileOptions = groupedOptions(ROSD.companions, this.document.system.profile, v => `${v.rp} PR`);
     return ctx;
   }
 }
@@ -591,9 +653,7 @@ export class CreatureSheet extends ROSDBaseSheet {
 
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
-    ctx.profileChoices = Object.fromEntries(Object.entries(ROSD.bestiary)
-      .sort((a, b) => a[1].label.localeCompare(b[1].label))
-      .map(([k, v]) => [k, `${v.label} (${v.xp} PX)`]));
+    ctx.profileOptions = groupedOptions(ROSD.bestiary, this.document.system.profile, v => `${v.xp} PX`);
     ctx.aiText = ROSD.creatureAI;
     return ctx;
   }

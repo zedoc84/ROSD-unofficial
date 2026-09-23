@@ -1,30 +1,30 @@
 <div class="rosd-sheet">
   <header class="rosd-header">
-    <img class="rosd-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="portrait" data-tooltip="Changer le portrait">
+    <img class="rosd-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="portrait" data-tooltip="Change portrait">
     <div class="rosd-ident">
-      <input class="rosd-name" type="text" name="name" value="{{actor.name}}" placeholder="Nom du ranger">
+      <input class="rosd-name" type="text" name="name" value="{{actor.name}}" placeholder="Ranger name">
       <div class="rosd-ident-row">
-        <label>Joueur<input type="text" name="system.player" value="{{system.player}}"></label>
-        <label class="short">Niveau<input type="number" name="system.level" value="{{system.level}}"></label>
-        <label class="short">PX<input type="number" name="system.xp" value="{{system.xp}}"></label>
-        <span class="rosd-next" data-tooltip="{{system.nextLevelBonus}}">Niv. {{rosdAdd system.level 1}} : {{system.nextLevelCost}} PX
-          {{#if canLevel}}<button type="button" data-action="levelUp"><i class="fa-solid fa-arrow-up"></i> Monter</button>{{/if}}</span>
+        <label>Player<input type="text" name="system.player" value="{{system.player}}"></label>
+        <label class="short">Level<input type="number" name="system.level" value="{{system.level}}"></label>
+        <label class="short">XP<input type="number" name="system.xp" value="{{system.xp}}"></label>
+        <span class="rosd-next" data-tooltip="{{system.nextLevelBonus}}">Level {{rosdAdd system.level 1}}: {{system.nextLevelCost}} XP
+          {{#if canLevel}}<button type="button" data-action="levelUp"><i class="fa-solid fa-arrow-up"></i> Level Up</button>{{/if}}</span>
       </div>
       <div class="rosd-quick">
-        <button type="button" data-action="melee"><i class="fa-solid fa-khanda"></i> Mêlée {{fightLabel}}</button>
-        <button type="button" data-action="shoot"><i class="fa-solid fa-bullseye"></i> Tir {{shootLabel}}</button>
-        <button type="button" data-action="newScenario" data-tooltip="Réinitialise capacités, sorts et poison"><i class="fa-solid fa-rotate"></i> Nouveau scénario</button>
-        <button type="button" data-action="survival" data-tooltip="Après la partie, si la Santé est tombée à 0"><i class="fa-solid fa-skull-crossbones"></i> Survie</button>
+        <button type="button" data-action="melee"><i class="fa-solid fa-khanda"></i> Melee {{fightLabel}}</button>
+        <button type="button" data-action="shoot"><i class="fa-solid fa-bullseye"></i> Shoot {{shootLabel}}</button>
+        <button type="button" data-action="newScenario" data-tooltip="Resets Heroic Abilities, spells and poison"><i class="fa-solid fa-rotate"></i> New Scenario</button>
+        <button type="button" data-action="survival" data-tooltip="After the game, if Health was reduced to 0"><i class="fa-solid fa-skull-crossbones"></i> Survival</button>
       </div>
     </div>
     {{> "systems/rosd/templates/parts/emblem.hbs"}}
   </header>
 
   <nav class="rosd-tabs">
-    <a data-action="rosdTab" data-tab-link="main">Fiche</a>
-    <a data-action="rosdTab" data-tab-link="powers">Capacités &amp; sorts</a>
-    <a data-action="rosdTab" data-tab-link="gear">Équipement</a>
-    <a data-action="rosdTab" data-tab-link="campaign">Campagne &amp; notes</a>
+    <a data-action="rosdTab" data-tab-link="main">Sheet</a>
+    <a data-action="rosdTab" data-tab-link="powers">Abilities, Spells &amp; Traits</a>
+    <a data-action="rosdTab" data-tab-link="gear">Equipment</a>
+    <a data-action="rosdTab" data-tab-link="campaign">Campaign &amp; Notes</a>
   </nav>
 
   <div class="rosd-body">
@@ -35,8 +35,8 @@
         <div>
           {{> "systems/rosd/templates/parts/status.hbs"}}
           <section class="rosd-block">
-            <h2>Blessures permanentes</h2>
-            <textarea name="system.injuries" rows="4" placeholder="Ex. : Bras broyé (Combat +3/+2)">{{system.injuries}}</textarea>
+            <h2>Permanent Injuries</h2>
+            <textarea name="system.injuries" rows="4" placeholder="e.g. Crushed Arm (Fight +3/+2)">{{system.injuries}}</textarea>
           </section>
         </div>
       </div>
@@ -45,13 +45,14 @@
     <section class="rosd-panel" data-tab-panel="powers">
       {{> "systems/rosd/templates/parts/abilities.hbs"}}
       {{> "systems/rosd/templates/parts/spells.hbs"}}
+      {{> "systems/rosd/templates/parts/traits.hbs"}}
     </section>
 
     <section class="rosd-panel" data-tab-panel="gear">
       {{> "systems/rosd/templates/parts/weapons.hbs"}}
       {{> "systems/rosd/templates/parts/items.hbs"}}
       <section class="rosd-block rosd-slots">
-        <h2>Emplacements d'objets <small>(6)</small></h2>
+        <h2>Item Slots <small>(6)</small></h2>
         <datalist id="rosd-equip-{{actor.id}}">{{#each equipmentList}}<option value="{{this}}"></option>{{/each}}</datalist>
         <ol>
           <li><input type="text" list="rosd-equip-{{actor.id}}" name="system.gear.slot1" value="{{system.gear.slot1}}"></li>
@@ -62,32 +63,48 @@
           <li><input type="text" list="rosd-equip-{{actor.id}}" name="system.gear.slot6" value="{{system.gear.slot6}}"></li>
         </ol>
         <div class="rosd-form-grid">
-          <label>Dague / couteau gratuit<input type="text" name="system.gear.freeKnife" value="{{system.gear.freeKnife}}"></label>
-          <label>Munition magique (carquois)<input type="text" name="system.gear.magicAmmo" value="{{system.gear.magicAmmo}}"></label>
+          <label>Free dagger / knife<input type="text" name="system.gear.freeKnife" value="{{system.gear.freeKnife}}"></label>
+          <label>Magic ammunition (quiver)<input type="text" name="system.gear.magicAmmo" value="{{system.gear.magicAmmo}}"></label>
         </div>
-        <label class="rosd-wide">Objets magiques personnels
+        <label class="rosd-wide">Personal magic items
           <textarea name="system.gear.personalMagic" rows="3">{{system.gear.personalMagic}}</textarea></label>
-        <label class="rosd-wide">Trésors sécurisés
+        <label class="rosd-wide">Secured treasure
           <textarea name="system.treasure" rows="3">{{system.treasure}}</textarea></label>
       </section>
     </section>
 
     <section class="rosd-panel" data-tab-panel="campaign">
-      <section class="rosd-block rosd-recruit">
-        <h2>Recrutement</h2>
+      <section class="rosd-block rosd-archetype">
+        <h2>Archetype <small>(A Gathering of Heroes)</small></h2>
         <div class="rosd-form-grid">
-          <label>Points de recrutement de base<input type="number" name="system.brp" value="{{system.brp}}"></label>
-          <div class="rosd-readout"><span>{{recruit.total}}</span> PR totaux pour {{recruit.players}} joueur(s), Commandement inclus</div>
-          <div class="rosd-readout"><span>{{recruit.max}}</span> compagnons max · <span>{{recruit.activate}}</span> activés en phase des Rangers</div>
+          <label>Archetype
+            <select name="system.archetype">{{selectOptions archetypeChoices selected=system.archetype blank="— None —"}}</select></label>
+          {{#if archetypeInfo}}<div><button type="button" data-action="applyArchetype" data-tooltip="Stats, starting skills, RP, traits and limitations"><i class="fa-solid fa-file-import"></i> Apply archetype</button></div>{{/if}}
         </div>
-        <label class="rosd-wide">Compagnons actuels
+        {{#if archetypeInfo}}
+        <div class="rosd-archetype-info">
+          <p><b>Stat-line:</b> {{archetypeInfo.statLine}} · <b>{{archetypeInfo.bp}} PC</b> · <b>{{archetypeInfo.rp}} PR</b></p>
+          {{#if archetypeInfo.traitNames}}<p><b>Traits:</b> {{archetypeInfo.traitNames}}</p>{{/if}}
+          {{#if archetypeInfo.limitationNames}}<p><b>Limitations:</b> {{archetypeInfo.limitationNames}}</p>{{/if}}
+          <p class="rosd-hint">{{archetypeInfo.notes}}</p>
+        </div>
+        {{/if}}
+      </section>
+      <section class="rosd-block rosd-recruit">
+        <h2>Recruitment</h2>
+        <div class="rosd-form-grid">
+          <label>Base Recruitment Points<input type="number" name="system.brp" value="{{system.brp}}"></label>
+          <div class="rosd-readout"><span>{{recruit.total}}</span> total RP for {{recruit.players}} player(s), Leadership included</div>
+          <div class="rosd-readout"><span>{{recruit.max}}</span> max companions · <span>{{recruit.activate}}</span> activated in the Ranger Phase</div>
+        </div>
+        <label class="rosd-wide">Current companions
           <textarea name="system.companions" rows="3">{{system.companions}}</textarea></label>
       </section>
       <section class="rosd-block">
-        <h2>Création et progression</h2>
-        <p class="rosd-hint">Prochain niveau ({{rosdAdd system.level 1}}) : {{system.nextLevelBonus}}.</p>
-        <label class="rosd-wide">Points de construction dépensés
-          <textarea name="system.buildPoints" rows="3" placeholder="10 PC : caractéristiques (3 max), capacités/sorts (5 max), compétences (5 max, 8 × +1 chacun), recrutement (3 max, +10 PR)">{{system.buildPoints}}</textarea></label>
+        <h2>Creation &amp; Advancement</h2>
+        <p class="rosd-hint">Next level ({{rosdAdd system.level 1}}): {{system.nextLevelBonus}}.</p>
+        <label class="rosd-wide">Build Points spent
+          <textarea name="system.buildPoints" rows="3" placeholder="10 BP: stats (max 3), abilities/spells (max 5), skills (max 5, eight +1 each), recruitment (max 3, +10 RP)">{{system.buildPoints}}</textarea></label>
         <label class="rosd-wide">Historique
           <textarea name="system.background" rows="4">{{system.background}}</textarea></label>
         <label class="rosd-wide">Notes

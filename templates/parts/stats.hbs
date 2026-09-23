@@ -1,19 +1,19 @@
 <section class="rosd-stats">
   {{#each stats}}
   <div class="rosd-stat{{#if split}} split{{/if}}">
-    <a class="rosd-stat-label" data-action="rollStat" data-key="{{key}}" data-tooltip="{{#if (eq key "fight")}}Attaque au corps à corps{{else if (eq key "shoot")}}Attaque de tir{{else}}Jet de {{label}} (1d20 + valeur effective){{/if}}">{{label}}</a>
+    <a class="rosd-stat-label" data-action="rollStat" data-key="{{key}}" data-tooltip="{{#if (eq key "fight")}}Melee attack{{else if (eq key "shoot")}}Shooting attack{{else}}{{label}} Roll (1d20 + effective value){{/if}}">{{label}}</a>
     <div class="rosd-stat-value">
       {{#if split}}<span class="rosd-stat-base">{{#if signed}}{{rosdSigned value}}{{else}}{{value}}{{/if}}</span><span class="rosd-slash">/</span>{{/if}}{{#if signed}}{{rosdSigned total}}{{else}}{{total}}{{/if}}
     </div>
     <div class="rosd-stat-inputs">
-      <label data-tooltip="Valeur réelle">Base<input type="number" step="any" name="system.stats.{{key}}.value" value="{{value}}"></label>
-      <label data-tooltip="Modificateur temporaire, blessure, sort… (crée une caractéristique divisée)">Mod.<input type="number" step="any" name="system.stats.{{key}}.mod" value="{{mod}}"></label>
+      <label data-tooltip="Current value">Base<input type="number" step="any" name="system.stats.{{key}}.value" value="{{value}}"></label>
+      <label data-tooltip="Temporary modifier: injury, spell… (creates a split stat)">Mod.<input type="number" step="any" name="system.stats.{{key}}.mod" value="{{mod}}"></label>
     </div>
     {{#if item}}<div class="rosd-stat-item" data-tooltip="{{itemSources}}"><i class="fa-solid fa-sack"></i> Objets {{rosdSigned item}}</div>{{/if}}
   </div>
   {{/each}}
   <div class="rosd-stat rosd-health">
-    <a class="rosd-stat-label" data-action="rollStat" data-key="health" data-tooltip="Jet de Santé (Santé actuelle)">Santé</a>
+    <a class="rosd-stat-label" data-action="rollStat" data-key="health" data-tooltip="Health Roll (current Health)">Health</a>
     <div class="rosd-stat-value">{{system.health.value}}<span class="rosd-slash">/</span><span class="rosd-stat-base">{{system.health.max}}</span></div>
     <div class="rosd-stat-inputs">
       <label>Act.<input type="number" name="system.health.value" value="{{system.health.value}}"></label>

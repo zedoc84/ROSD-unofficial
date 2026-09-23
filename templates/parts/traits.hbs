@@ -1,0 +1,34 @@
+<section class="rosd-block rosd-list">
+  <h2>Traits <small>(permanent traits — A Gathering of Heroes)</small></h2>
+  <ol>
+    {{#each traits}}
+    <li>
+      <div class="rosd-list-row">
+        <a class="rosd-list-name" data-action="describe" data-list="traits" data-index="{{i}}" data-tooltip="Post to chat">{{label}}</a>
+        {{#if tag}}<span class="rosd-tag">{{tag}}</span>{{/if}}
+        <span class="rosd-en"></span>
+        {{#if ../editable}}<a class="rosd-remove" data-action="remove" data-list="traits" data-index="{{i}}" data-tooltip="Remove"><i class="fa-solid fa-xmark"></i></a>{{/if}}
+      </div>
+      <p class="rosd-desc">{{desc}}</p>
+    </li>
+    {{else}}<li class="rosd-empty">No traits.</li>{{/each}}
+  </ol>
+  {{#if editable}}<select data-add="traits"><option value="">+ Add a trait…</option>{{selectOptions traitsChoices}}</select>{{/if}}
+</section>
+<section class="rosd-block rosd-list">
+  <h2>Limitations <small>(major: +1 BP · minor: +½ BP)</small></h2>
+  <ol>
+    {{#each limitations}}
+    <li>
+      <div class="rosd-list-row">
+        <a class="rosd-list-name" data-action="describe" data-list="limitations" data-index="{{i}}" data-tooltip="Post to chat">{{label}}</a>
+        {{#if tag}}<span class="rosd-tag rosd-tag-limit">{{tag}}</span>{{/if}}
+        <span class="rosd-en"></span>
+        {{#if ../editable}}<a class="rosd-remove" data-action="remove" data-list="limitations" data-index="{{i}}" data-tooltip="Remove"><i class="fa-solid fa-xmark"></i></a>{{/if}}
+      </div>
+      <p class="rosd-desc">{{desc}}</p>
+    </li>
+    {{else}}<li class="rosd-empty">No limitations.</li>{{/each}}
+  </ol>
+  {{#if editable}}<select data-add="limitations"><option value="">+ Add a limitation…</option>{{selectOptions limitationsChoices}}</select>{{/if}}
+</section>

@@ -2,15 +2,15 @@
   <header class="rosd-header">
     <img class="rosd-portrait rosd-item-img" src="{{item.img}}" alt="{{item.name}}" data-action="portrait" data-tooltip="Changer l'image">
     <div class="rosd-ident">
-      <input class="rosd-name" type="text" name="name" value="{{item.name}}" placeholder="Nom de l'objet">
+      <input class="rosd-name" type="text" name="name" value="{{item.name}}" placeholder="Item name">
       <div class="rosd-ident-row">
         <label>Catégorie
           <select name="system.category">{{selectOptions categories selected=system.category}}</select></label>
         <label class="short">Emplacements<input type="number" min="0" name="system.slots" value="{{system.slots}}"></label>
-        <label class="short">Quantité<input type="number" min="0" name="system.quantity" value="{{system.quantity}}"></label>
+        <label class="short">Quantity<input type="number" min="0" name="system.quantity" value="{{system.quantity}}"></label>
       </div>
       <div class="rosd-quick">
-        <label class="rosd-check"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> Porté</label>
+        <label class="rosd-check"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> Worn / carried</label>
         <label class="rosd-check"><input type="checkbox" name="system.magic" {{checked system.magic}}> Arme magique</label>
         <label class="rosd-check"><input type="checkbox" name="system.consumable" {{checked system.consumable}}> Consommable</label>
       </div>
@@ -22,42 +22,42 @@
       <h2>Arme</h2>
       <div class="rosd-form-grid">
         <label>Type<select name="system.weapon.kind">{{selectOptions kinds selected=system.weapon.kind}}</select></label>
-        <label>Modificateur de dégâts<input type="number" name="system.weapon.dmg" value="{{system.weapon.dmg}}"></label>
-        <label>Portée (")<input type="number" min="0" name="system.weapon.range" value="{{system.weapon.range}}"></label>
-        <label class="rosd-check"><input type="checkbox" name="system.weapon.staff" {{checked system.weapon.staff}}> Bâton (adversaire -1 dégâts)</label>
-        <label class="rosd-check"><input type="checkbox" name="system.weapon.twoHanded" {{checked system.weapon.twoHanded}}> À deux mains</label>
+        <label>Damage modifier<input type="number" name="system.weapon.dmg" value="{{system.weapon.dmg}}"></label>
+        <label>Range (")<input type="number" min="0" name="system.weapon.range" value="{{system.weapon.range}}"></label>
+        <label class="rosd-check"><input type="checkbox" name="system.weapon.staff" {{checked system.weapon.staff}}> Staff (opponent -1 damage)</label>
+        <label class="rosd-check"><input type="checkbox" name="system.weapon.twoHanded" {{checked system.weapon.twoHanded}}> Two-handed</label>
       </div>
     </section>
     {{/if}}
     <section class="rosd-block">
-      <h2>Bonus aux caractéristiques</h2>
-      <p class="rosd-hint">Armures et objets : appliqués quand l'objet est porté. Armes : appliqués quand l'arme est en main. Si « Nécessite une activation » est coché, les bonus ne comptent qu'après avoir utilisé ou activé l'objet (potions, arme Magie…).</p>
+      <h2>Stat bonuses</h2>
+      <p class="rosd-hint">Armour and items: applied while worn. Weapons: applied while wielded. If “Requires activation” is ticked, bonuses are not applied automatically.</p>
       <div class="rosd-form-grid rosd-bonus-grid">
         <label>Mouvement<input type="number" name="system.bonus.move" value="{{system.bonus.move}}"></label>
         <label>Combat<input type="number" name="system.bonus.fight" value="{{system.bonus.fight}}"></label>
         <label>Tir<input type="number" name="system.bonus.shoot" value="{{system.bonus.shoot}}"></label>
         <label>Armure<input type="number" name="system.bonus.armour" value="{{system.bonus.armour}}"></label>
-        <label>Volonté<input type="number" name="system.bonus.will" value="{{system.bonus.will}}"></label>
-        <label>Dégâts en mêlée<input type="number" name="system.bonus.dmg" value="{{system.bonus.dmg}}"></label>
+        <label>Will<input type="number" name="system.bonus.will" value="{{system.bonus.will}}"></label>
+        <label>Melee damage<input type="number" name="system.bonus.dmg" value="{{system.bonus.dmg}}"></label>
       </div>
       <div class="rosd-quick rosd-light">
-        <label class="rosd-check"><input type="checkbox" name="system.activation" {{checked system.activation}}> Nécessite une activation</label>
+        <label class="rosd-check"><input type="checkbox" name="system.activation" {{checked system.activation}}> Requires activation</label>
         <label class="rosd-check"><input type="checkbox" name="system.active" {{checked system.active}}> Actif</label>
       </div>
     </section>
     <section class="rosd-block">
-      <h2>Propriété et charges</h2>
+      <h2>Property &amp; charges</h2>
       <div class="rosd-form-grid">
-        <label>Propriété<select name="system.property">{{selectOptions properties selected=system.property}}</select></label>
+        <label>Property<select name="system.property">{{selectOptions properties selected=system.property}}</select></label>
         <label>Charges restantes<input type="number" min="0" name="system.charges.value" value="{{system.charges.value}}"></label>
         <label>Charges max<input type="number" min="0" name="system.charges.max" value="{{system.charges.max}}"></label>
       </div>
     </section>
     <section class="rosd-block">
-      <h2>Compétences</h2>
+      <h2>Skills</h2>
       <div class="rosd-form-grid">
-        <label>Compétence 1<select name="system.skills.a">{{selectOptions skillChoices selected=system.skills.a}}</select></label>
-        <label>Compétence 2<select name="system.skills.b">{{selectOptions skillChoices selected=system.skills.b}}</select></label>
+        <label>Skill 1<select name="system.skills.a">{{selectOptions skillChoices selected=system.skills.a}}</select></label>
+        <label>Skill 2<select name="system.skills.b">{{selectOptions skillChoices selected=system.skills.b}}</select></label>
         <label>Bonus<input type="number" name="system.skills.value" value="{{system.skills.value}}"></label>
         <label>Mode<select name="system.skills.mode">{{selectOptions skillModes selected=system.skills.mode}}</select></label>
       </div>
@@ -66,12 +66,12 @@
       <h2>Utilisation</h2>
       <div class="rosd-form-grid">
         <label>Soins<input type="number" min="0" name="system.use.heal" value="{{system.use.heal}}"></label>
-        <label>Santé temporaire<input type="number" min="0" name="system.use.tempHealth" value="{{system.use.tempHealth}}"></label>
-        <label>Attaque de tir (bonus)<input type="number" min="0" name="system.use.attack" value="{{system.use.attack}}"></label>
-        <label>Portée de l'attaque (")<input type="number" min="0" name="system.use.range" value="{{system.use.range}}"></label>
-        <label class="rosd-check"><input type="checkbox" name="system.use.fullHeal" {{checked system.use.fullHeal}}> Santé complète</label>
-        <label class="rosd-check"><input type="checkbox" name="system.use.cure" {{checked system.use.cure}}> Guérit le poison</label>
-        <label class="rosd-check"><input type="checkbox" name="system.use.cureDisease" {{checked system.use.cureDisease}}> Guérit la maladie</label>
+        <label>Temporary Health<input type="number" min="0" name="system.use.tempHealth" value="{{system.use.tempHealth}}"></label>
+        <label>Shooting attack (bonus)<input type="number" min="0" name="system.use.attack" value="{{system.use.attack}}"></label>
+        <label>Attack range (")<input type="number" min="0" name="system.use.range" value="{{system.use.range}}"></label>
+        <label class="rosd-check"><input type="checkbox" name="system.use.fullHeal" {{checked system.use.fullHeal}}> Full Health</label>
+        <label class="rosd-check"><input type="checkbox" name="system.use.cure" {{checked system.use.cure}}> Cures poison</label>
+        <label class="rosd-check"><input type="checkbox" name="system.use.cureDisease" {{checked system.use.cureDisease}}> Cures disease</label>
       </div>
     </section>
     <section class="rosd-block">

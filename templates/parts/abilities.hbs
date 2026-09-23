@@ -1,25 +1,25 @@
 <section class="rosd-block rosd-list">
-  <h2>Capacités héroïques <small>(1 fois par scénario, 1 par activation)</small></h2>
+  <h2>Heroic Abilities <small>(once per scenario, one per activation)</small></h2>
   <ol>
     {{#each abilities}}
     <li class="{{#if used}}used{{/if}}">
       <div class="rosd-list-row">
-        <input type="checkbox" data-action="toggleUsed" data-list="abilities" data-index="{{i}}" {{checked used}} data-tooltip="Utilisée pendant ce scénario">
-        <a class="rosd-icon" data-action="editIcon" data-list="abilities" data-index="{{i}}" data-tooltip="Clic : changer l'icône (PNG/JPEG) · Clic droit : icône par défaut">{{#if img}}<img src="{{img}}" alt="">{{else}}<i class="fa-solid fa-star"></i>{{/if}}</a>
-        <a class="rosd-list-name" data-action="describe" data-list="abilities" data-index="{{i}}" data-tooltip="Afficher dans le chat">{{label}}</a>
+        <input type="checkbox" data-action="toggleUsed" data-list="abilities" data-index="{{i}}" {{checked used}} data-tooltip="Used this scenario">
+        <a class="rosd-icon" data-action="editIcon" data-list="abilities" data-index="{{i}}" data-tooltip="Click: change icon (PNG/JPEG) · Right click: default icon">{{#if img}}<img src="{{img}}" alt="">{{else}}<i class="fa-solid fa-star"></i>{{/if}}</a>
+        <a class="rosd-list-name" data-action="describe" data-list="abilities" data-index="{{i}}" data-tooltip="Post to chat">{{label}}</a>
         <span class="rosd-en">{{en}}</span>
         {{#if ../editable}}
-        <button type="button" data-action="ability" data-index="{{i}}"><i class="fa-solid fa-star"></i> Utiliser</button>
-        <a class="rosd-remove" data-action="remove" data-list="abilities" data-index="{{i}}" data-tooltip="Retirer"><i class="fa-solid fa-xmark"></i></a>
+        <button type="button" data-action="ability" data-index="{{i}}"><i class="fa-solid fa-star"></i> Use</button>
+        <a class="rosd-remove" data-action="remove" data-list="abilities" data-index="{{i}}" data-tooltip="Remove"><i class="fa-solid fa-xmark"></i></a>
         {{/if}}
       </div>
       <p class="rosd-desc">{{desc}}</p>
     </li>
     {{else}}
-    <li class="rosd-empty">Aucune capacité. Choisissez-en dans la liste ci-dessous.</li>
+    <li class="rosd-empty">No Heroic Abilities yet — pick one below.</li>
     {{/each}}
   </ol>
   {{#if editable}}
-  <select data-add="abilities"><option value="">+ Ajouter une capacité héroïque…</option>{{selectOptions abilityChoices}}</select>
+  <select data-add="abilities"><option value="">+ Add a Heroic Ability…</option>{{selectOptions abilityChoices}}</select>
   {{/if}}
 </section>

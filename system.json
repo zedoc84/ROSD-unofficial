@@ -1,8 +1,8 @@
 {
-  "id": "rangers-of-shadow-deep-unofficial",
+  "id": "rosd",
   "title": "Rangers of Shadow Deep",
-  "description": "Système non officiel pour Rangers of Shadow Deep (Deluxe Edition) de Joseph A. McCullough : fiches de ranger, de compagnon et de créature, jets de dés automatisés (compétences, combat, tir, sorts, survie). Nécessite le livre de règles.",
-  "version": "1.5.0",
+  "description": "Character, companion and creature sheets, dice engine, items and PDF export for Rangers of Shadow Deep, including the supplements.",
+  "version": "2.0.1",
   "compatibility": {
     "minimum": "13",
     "verified": "14"

@@ -1,12 +1,9 @@
 {
-  "TYPES": {
-    "Actor": {
-      "ranger": "Ranger (héros)",
-      "companion": "Compagnon (suivant)",
-      "creature": "Créature"
-    },
-    "Item": {
-      "objet": "Objet"
-    }
-  }
+  "TYPES.Actor.ranger": "Ranger",
+  "TYPES.Actor.companion": "Companion",
+  "TYPES.Actor.creature": "Creature",
+  "TYPES.Item.objet": "Item",
+  "ROSD.SettingPlayers": "Number of players",
+  "ROSD.SettingShootTie": "Shooting ties hit",
+  "ROSD.SettingHeroDice": "Hero die colour (Dice So Nice)"
 }

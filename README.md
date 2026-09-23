@@ -1,33 +1,27 @@
-# Rangers of Shadow Deep — système Foundry VTT
+# Rangers of Shadow Deep — Foundry VTT system
 
-Système non officiel pour **Rangers of Shadow Deep – Deluxe Edition** (Joseph A. McCullough).
-Compatible Foundry VTT v13 et v14. Le livre de règles reste nécessaire : les descriptions sont des résumés.
+Unofficial system for **Rangers of Shadow Deep – Deluxe Edition** (Joseph A. McCullough).
+Compatible with Foundry VTT v13 and v14. You still need the rulebooks: all descriptions here are short summaries.
 
 ## Installation
-1. Décompressez l'archive : vous obtenez un dossier `rosd`.
-2. Copiez-le dans `Données utilisateur/Data/systems/` (le chemin final doit être `.../Data/systems/rosd/system.json`).
-3. Relancez Foundry, créez un monde avec le système « Rangers of Shadow Deep ».
-4. Paramètres du monde : indiquez le nombre de joueurs (points de recrutement, compagnons activés).
+1. Unzip the archive: you get a `rosd` folder.
+2. Copy it into `User Data/Data/systems/` (the final path must be `.../Data/systems/rosd/system.json`).
+3. Restart Foundry and create a world with the "Rangers of Shadow Deep" system.
+4. World settings: set the number of players (used for Recruitment Points and companions activated in the Ranger Phase).
 
-## Contenu
-- **Ranger (héros)** : caractéristiques divisées (base/effective), 15 compétences, capacités héroïques et sorts en listes déroulantes, 6 emplacements d'objets, états, recrutement, niveaux et PX.
-- **Compagnon (suivant)** : profils des 17 compagnons du livre à appliquer en un clic, équipement, progression.
-- **Créature** : 30 profils du bestiaire, traits (mort-vivant, poison, maladie, immunité partielle…), rappel du comportement des créatures.
-- **Icônes modifiables** (PNG ou JPEG) : clic sur le portrait, sur l'emblème en haut à droite ou sur l'icône de chaque capacité et sort. Clic droit sur une icône : retour à l'icône par défaut.
-- **Export PDF** : bouton PDF dans la barre de titre de chaque fiche (à côté des boutons de Foundry). La fiche est téléchargée en A4, avec le portrait.
-- **Objets** : type d'objet « Objet » (catégorie, emplacements, quantité, magique, description). Glissez-les sur une fiche depuis l'onglet Objets, un compendium ou une autre fiche. Entre deux fiches, l'objet est transféré (maintenez Ctrl pour le copier). Les objets identiques non magiques s'empilent. La fiche compte les emplacements (6 pour un ranger, 2 objets pour un compagnon) et refuse les objets sur les animaux.
-- **Objets des règles** : bouton « Importer les objets ROSD » dans l'onglet Objets (MJ) : 72 objets (équipement de base, 20 herbes et potions, 20 armes et armures magiques, 20 objets magiques).
-- **Bonus automatiques** : les armures et objets portés, et l'arme en main, ajoutent leurs bonus aux caractéristiques (ligne « Objets » sous Mod.). Les dégâts de l'arme en main sont utilisés dans les attaques.
-- Bouton **« Importer le bestiaire ROSD »** dans l'onglet Acteurs (MJ).
+## Contents
+- **Ranger (hero)**: split stats (base / effective), 15 skills, Heroic Abilities and spells as drop-down lists, six item slots, status, recruitment, levels and XP.
+- **Companion**: one-click profiles for every companion in the books, gear, advancement.
+- **Creature**: bestiary profiles with traits (undead, poison, disease, partial immunity…) and a reminder of creature behaviour.
+- **Supplements** (Blood Moon, Temple of Madness, Ghost Stone, Incinerator, Menagerie, Across the Wastes, Ashen Sky, Tenebrous Citadel, A Gathering of Heroes): 30 creatures, 47 companions, 6 spells, 8 Heroic Abilities, 46 traits, 40 limitations, 10 archetypes and 144 items. Drop-down lists show the source book and the importer sorts actors into a folder per book.
+- **Archetypes**: pick one on the ranger's Campaign tab and click "Apply archetype" to set the stat-line, starting skills, Recruitment Points, traits and limitations.
+- **Editable icons** (PNG or JPEG): click the portrait, the emblem at the top right, or the icon of any ability or spell. Right click an icon to restore the default.
+- **PDF export**: a PDF button in the title bar of every sheet. The sheet downloads as A4, portrait included.
+- **Items**: an "Item" document type (category, slots, quantity, magic, description). Drag items onto a sheet from the Items tab, a compendium or another sheet. Between two sheets the item is moved (hold Ctrl to copy). Identical non-magic items stack. Slots are counted (six for a ranger, two items for a companion) and animals refuse items.
+- **Item import**: the "Import the ROSD items" button on the Items tab (GM only) creates 216 items in eight folders.
+- **Automatic bonuses**: worn armour and items, and the wielded weapon, add their bonuses to the stats (the "Items" line under Mod.). The wielded weapon's damage is used in attacks.
+- **Dice engine**: skill and stat rolls with a Target Number, opposed melee and shooting rolls with support, cover, criticals and damage breakdown, spells with resistance rolls and healing, Survival Table and Permanent Injuries. Chat-card buttons cover Hand of Fate, Deadly Strike/Shot, Parry, Powerful Blow, Roll with the Punch, Inner Strength, wizard's staff and item properties.
+- **Dice So Nice**: the hero's d20 uses a colour of your choice (default dark blue); creatures keep the native appearance.
 
-## Jets de dés
-- Clic sur une caractéristique ou une compétence : 1d20 + valeur contre un ND (20 naturel = réussite, 1 = échec).
-- **Mêlée / Tir** : ciblez l'adversaire (touche T), les deux d20 sont lancés, soutiens, armes, couverts, critiques, dégâts, multiplicateurs et immunité partielle sont calculés. Bouton pour appliquer les dégâts (poison et maladie gérés).
-- Capacités utilisables depuis le chat : Main du destin, Coup/Tir mortel, Parade, Coup puissant, Encaisser le coup, Force intérieure. Les autres (Attaque frénétique, Visée assurée, Plongeon, Concentration, Puissance accrue) se cochent avant le jet.
-- **Sorts** : attaques magiques automatiques, boutons de résistance en Volonté, bouton de soins. Objets de lanceur (baguette, cristal, icône sacrée, bâton de sorcier) pris en compte.
-- **Table de survie** et **blessures permanentes** après la partie.
-- Bouton **Nouveau scénario** : réinitialise capacités et sorts utilisés.
-- Initiative du tracker : rangers (par Volonté), puis créatures (par Santé), puis compagnons.
-
-## Licence tierce
-L'export PDF utilise jsPDF (licence MIT), inclus dans `lib/`.
+## Note
+This is a fan-made system. All game text belongs to Joseph A. McCullough; the descriptions included here are condensed paraphrases meant as table reminders, not a replacement for the books.

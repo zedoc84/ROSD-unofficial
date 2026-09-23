@@ -1,5 +1,5 @@
 <section class="rosd-block rosd-items">
-  <h2>Objets <small>(glissez-déposez un objet sur la fiche)</small></h2>
+  <h2>Items <small>(drag and drop an item onto the sheet)</small></h2>
   {{#if itemsList.length}}
   <ol class="rosd-item-list">
     {{#each itemsList}}
@@ -9,25 +9,25 @@
         <a class="rosd-item-name" data-action="itemEdit">{{name}}</a>
         <div class="rosd-item-sub">
           {{category}}{{#if weaponInfo}} · {{weaponInfo}}{{/if}}{{#if bonus}} · <b>{{bonus}}</b>{{/if}}
-          {{#if charges}} · charges {{charges}}{{/if}}{{#if active}} · <span class="rosd-active">actif</span>{{/if}}
-          {{#if magic}} · <span class="rosd-active">magique</span>{{/if}}
+          {{#if charges}} · charges {{charges}}{{/if}}{{#if active}} · <span class="rosd-active">active</span>{{/if}}
+          {{#if magic}} · <span class="rosd-active">magic</span>{{/if}}
         </div>
       </div>
-      <span class="rosd-item-num" data-tooltip="Quantité">×{{quantity}}</span>
-      <span class="rosd-item-num" data-tooltip="Emplacements">{{slots}} empl.</span>
+      <span class="rosd-item-num" data-tooltip="Quantity">×{{quantity}}</span>
+      <span class="rosd-item-num" data-tooltip="Item slots">{{slots}} empl.</span>
       {{#if ../editable}}
-      {{#if isWeapon}}<a data-action="itemWield" class="{{#if wielded}}on{{/if}}" data-tooltip="{{#if wielded}}Arme en main (clic : ranger){{else}}Prendre en main{{/if}}"><i class="fa-solid fa-hand-fist"></i></a>
-      {{else}}<a data-action="itemEquip" class="{{#if equipped}}on{{/if}}" data-tooltip="{{#if equipped}}Porté : bonus appliqués (clic : retirer){{else}}Rangé : bonus non appliqués{{/if}}"><i class="fa-solid fa-shirt"></i></a>{{/if}}
+      {{#if isWeapon}}<a data-action="itemWield" class="{{#if wielded}}on{{/if}}" data-tooltip="{{#if wielded}}Wielded (click to stow){{else}}Wield{{/if}}"><i class="fa-solid fa-hand-fist"></i></a>
+      {{else}}<a data-action="itemEquip" class="{{#if equipped}}on{{/if}}" data-tooltip="{{#if equipped}}Worn: bonuses applied (click to remove){{else}}Stowed: bonuses not applied{{/if}}"><i class="fa-solid fa-shirt"></i></a>{{/if}}
       {{#if usable}}<a data-action="itemUse" data-tooltip="{{useLabel}}"><i class="fa-solid fa-wand-magic"></i></a>{{/if}}
-      <a data-action="itemChat" data-tooltip="Afficher dans le chat"><i class="fa-solid fa-comment"></i></a>
-      <a class="rosd-remove" data-action="itemDelete" data-tooltip="Retirer"><i class="fa-solid fa-trash"></i></a>
+      <a data-action="itemChat" data-tooltip="Post to chat"><i class="fa-solid fa-comment"></i></a>
+      <a class="rosd-remove" data-action="itemDelete" data-tooltip="Remove"><i class="fa-solid fa-trash"></i></a>
       {{/if}}
     </li>
     {{/each}}
   </ol>
   {{else}}
-  <p class="rosd-drop-hint"><i class="fa-solid fa-hand-pointer"></i> Glissez ici un objet depuis l'onglet Objets, un compendium ou une autre fiche.</p>
+  <p class="rosd-drop-hint"><i class="fa-solid fa-hand-pointer"></i> Drag an item here from the Items tab, a compendium or another sheet.</p>
   {{/if}}
   {{#if slotInfo}}<p class="rosd-hint{{#if slotInfo.over}} rosd-warn{{/if}}">{{slotInfo.text}}</p>{{/if}}
-  <p class="rosd-hint">Les bonus des armures et objets portés, et de l'arme en main, s'ajoutent aux caractéristiques (ligne « Objets »). Une arme glissée est prise en main automatiquement.</p>
+  <p class="rosd-hint">Bonuses from worn armour and items, and from the wielded weapon, are added to the stats (“Items” line). A dropped weapon is wielded automatically.</p>
 </section>

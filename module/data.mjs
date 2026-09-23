@@ -101,6 +101,9 @@ export class RangerData extends BaseFigure {
       skills: skillsSchema(),
       abilities: listSchema(),
       spells: listSchema(),
+      traits: listSchema(),
+      limitations: listSchema(),
+      archetype: str(""),
       weapons: weaponSchema("hand", "bow"),
       casterItem: str(""),
       gear: new fields.SchemaField({
@@ -133,6 +136,8 @@ export class CompanionData extends BaseFigure {
       skills: skillsSchema(),
       abilities: listSchema(),
       spells: listSchema(),
+      traits: listSchema(),
+      limitations: listSchema(),
       weapons: weaponSchema("hand", "none"),
       animal: bool(false),
       baseGear: str(""),
