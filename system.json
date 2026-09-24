@@ -1,8 +1,8 @@
 {
-  "id": "rosd",
-  "title": "Rangers of Shadow Deep",
+  "id": "rangers-of-shadow-deep-unofficial",
+  "title": "Ranger of Shadow Deep Unofficial",
   "description": "Character, companion and creature sheets, dice engine, items and PDF export for Rangers of Shadow Deep, including the supplements.",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "compatibility": {
     "minimum": "13",
     "verified": "14"
@@ -48,6 +48,6 @@
   "primaryTokenAttribute": "health",
   "initiative": "@init",
   "manifest": "https://raw.githubusercontent.com/zedoc84/ROSD-unofficial/main/system.json",
-  "download": "https://github.com/zedoc84/ROSD-unofficial/releases/download/v2.0.1/rosd.zip",
+  "download": "https://github.com/zedoc84/ROSD-unofficial/releases/download/v2.1.0/rosd.zip",
   "url": "https://github.com/zedoc84/ROSD-unofficial"
 }
